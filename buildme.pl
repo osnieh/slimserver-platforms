@@ -39,10 +39,8 @@ my $dirsToExcludeFori386Deb = "5.10 5.12 5.14 5.16 5.18 MSWin32-x86-multi-thread
 my $dirsToExcludeForLinuxNoCpanTarball = "i386-freebsd-64int MSWin32-x86-multi-thread MSWin32-x64-multi-thread i86pc-solaris-thread-multi-64int darwin darwin-x86_64 i386-linux sparc-linux x86_64-linux arm-linux armhf-linux powerpc-linux aarch64-linux /arch/ PreventStandby";
 my $dirsToExcludeForLinuxNoCpanLightTarball = $dirsToExcludeForLinuxNoCpanTarball . " /Bin/ /HTML/! /Firmware/ /MySQL/ Graphics/CODE2000* Plugin/DateTime DigitalInput iTunes LineIn LineOut MusicMagic RSSNews Rescan SavePlaylist SlimTris Snow Plugin/TT/ Visualizer xPL";
 my $dirsToIncludeForLinuxNoCpanLightTarball = "EN.*html/images CPAN/HTML";
-my $dirsToExcludeForMacOSX = "5.10 5.12 5.14 5.16 5.20 5.22 5.24 5.26 5.28 5.30 5.32 5.36 5.38 5.40 i386-freebsd-64int i386-linux x86_64-linux x86_64-linux-gnu-thread-multi MSWin32 i86pc-solaris-thread-multi-64int arm-linux armhf-linux powerpc-linux sparc-linux aarch64-linux";
-my $dirsToExcludeForWin32 = "5.10 5.12 5.16 5.18 5.20 5.22 5.24 5.26 5.28 5.30 5.32 5.34 5.36 5.38 5.40 MSWin32-x64-multi-thread i386-freebsd-64int i386-linux x86_64-linux x86_64-linux-gnu-thread-multi i86pc-solaris-thread-multi-64int darwin darwin-x86_64 sparc-linux arm-linux armhf-linux powerpc-linux aarch64-linux OS/Debian.pm OS/Linux.pm OS/Unix.pm OS/OSX.pm OS/RedHat.pm OS/Suse.pm OS/SlimService.pm OS/Synology.pm OS/SqueezeOS.pm icudt46b.dat icudt46l.dat icudt58b.dat icudt58l.dat";
-my $dirsToExcludeForWin64 = "5.14 $dirsToExcludeForWin32";
-$dirsToExcludeForWin64 =~ s/5.32 |MSWin32-x64-multi-thread //g;
+my $dirsToExcludeForMacOS = "5.10 5.12 5.14 5.16 5.20 5.22 5.24 5.26 5.28 5.30 5.32 5.36 5.38 5.40 i386-freebsd-64int i386-linux x86_64-linux x86_64-linux-gnu-thread-multi MSWin32 i86pc-solaris-thread-multi-64int arm-linux armhf-linux powerpc-linux sparc-linux aarch64-linux";
+my $dirsToExcludeForWin64 = "5.10 5.12 5.14 5.16 5.18 5.20 5.22 5.24 5.26 5.28 5.30 5.34 5.36 5.38 5.40 i386-freebsd-64int i386-linux x86_64-linux x86_64-linux-gnu-thread-multi i86pc-solaris-thread-multi-64int darwin darwin-x86_64 sparc-linux arm-linux armhf-linux powerpc-linux aarch64-linux OS/Debian.pm OS/Linux.pm OS/Unix.pm OS/OSX.pm OS/RedHat.pm OS/Suse.pm OS/SlimService.pm OS/Synology.pm OS/SqueezeOS.pm icudt46b.dat icudt46l.dat icudt58b.dat icudt58l.dat";
 
 # for Docker we provide x86_64 and armhf for Perl 5.32 only
 my $dirsToExcludeForDocker = "$dirsToExcludeForLinuxPackage 5.20 5.22 5.24 5.26 5.28 5.30 5.32 5.34 5.38 5.40 i386-linux i86pc-solaris-thread-multi-64int sparc-linux powerpc-linux icudt46b.dat icudt58b.dat";
@@ -113,7 +111,7 @@ sub checkCommandOptions {
 		exit(0);
 	}
 
-	if ($build =~ /^tarball|docker|debian|rpm|macosx|macos|win32|win64$/) {
+	if ($build =~ /^tarball|docker|debian|rpm|macos|win64$/) {
 		## releaseType is an option, but if its not there, we need
 		## to default it to 'nightly'
 		if (!$releaseType) {
@@ -315,16 +313,6 @@ sub doCommandOptions {
 		## Run the RPM
 		buildRPM();
 
-	} elsif ($build eq "macosx") {
-		## Build the Mac OSX package
-		$destName =~ s/$defaultDestName/LyrionMusicServer/;
-
-		if ( $releaseType && $releaseType eq "release" ) {
-			$destName =~ s/-$revision//;
-		}
-
-		buildMacOSX("$destName");
-
 	} elsif ($build eq "macos") {
 		## Build the Mac OSX menu bar item
 		$destName =~ s/$defaultDestName/LyrionMusicServer/;
@@ -334,12 +322,6 @@ sub doCommandOptions {
 		}
 
 		buildMacOS("$destName");
-
-	} elsif ($build eq "win32") {
-		## Build the Windows 32bit Installer
-		$destName =~ s/$defaultDestName/LyrionMusicServer/;
-		buildWin32("$destName");
-
 
 	} elsif ($build eq "win64") {
 		## Build the Windows 64bit Installer
@@ -409,18 +391,10 @@ sub showUsage {
 	print "    --x86_64 (optional)          - Build a package with only x86_64 Linux binaries\n";
 	print "    --i386 (optional)            - Build a package with only i386 Linux binaries\n";
 	print "\n";
-	print "--- Building a Mac OSX Package\n";
-	print "    --build macosx <required opts above>\n";
-	print "    --destName <filename>        - The name of the OSX Package Name, do not \n";
-	print "       (optional)                  include the extension.\n";
-	print "\n";
 	print "--- Building a macOS menu bar item\n";
 	print "    --build macos <required opts above>\n";
 	print "    --destName <filename>        - The name of the OSX Package Name, do not \n";
 	print "       (optional)                  include the extension.\n";
-	print "\n";
-	print "--- Building a Windows Package\n";
-	print "    --build win32 <required opts above>\n";
 }
 
 sub removeExclusions {
@@ -667,82 +641,6 @@ sub buildDebian {
 
 
 ##############################################################################################
-## Build the Mac OSX Installer Package
-##############################################################################################
-sub buildMacOSX {
-	## Grab the variables passed to us...
-	if ( ($_[0] ) || die("Problem: Not all of the variables were passed to the buildMacOSX function...") ) {
-		## Take the filename passed to us and make sure that we build the PKG with
-		## that name, and that the 'pretty mounted name' also matches
-		my $pkgName = $_[0];
-
-		print "INFO: Building package for Mac OSX (Universal)... \n";
-
-		## First, lets make sure we get rid of the files we don't need for this install
-		foreach (split(/ /, $dirsToExcludeForMacOSX)) {
-			print "INFO: Removing $_ files from buildDir...\n";
-			system("find $buildDir | grep -i $_ | xargs rm -rf ");
-		}
-
-		## Now, lets make the Install Files directory
-		print "INFO: Making $buildDir/$pkgName/Install Files...\n";
-		mkpath("$buildDir/$pkgName/Install Files");
-
-		## Copy in the documentation and license files..
-		print "INFO: Copying documentation & licenses...\n";
-		copy("$buildDir/server/license.txt", "$buildDir/$pkgName/License.txt");
-
-		## Set some xcodebuild paths...
-		my $xcodeBuildDir = "$buildDir/platforms/osx/Preference Pane/build/Deployment";
-		my $prefPaneDir = "$buildDir/$pkgName/Install Files/Squeezebox.prefPane";
-		my $contentsDir = "$prefPaneDir/Contents";
-
-		## Lets build the pref pane and installer...
-		print "INFO: Beginning PreferencePane and Installer build...\n";
-		system("cd \"$buildDir/platforms/osx/Preference Pane\"; xcodebuild -project \"SqueezeCenter.xcodeproj\" -target \"Squeezebox\" -configuration Deployment");
-
-		print "INFO: Copying Preference Pane...\n";
-		system("ditto \"$xcodeBuildDir/Squeezebox.prefPane\" \"$prefPaneDir\"");
-
-		system("mv \"$buildDir/server\" \"$contentsDir/\" ");
-		system("cd \"$contentsDir\"; mkdir perl; cd perl; tar xjf \"$buildDir/platforms/osx/Perl-5.34.0-x86_64-arm64.tar.bz2\"; chmod a+x bin/perl");
-
-		print "INFO: Create installer package $pkgName...\n";
-		system("/Developer/usr/bin/packagemaker --verbose --root-volume-only --root \"$prefPaneDir\" --scripts \"$buildDir/platforms/osx/Installer/scripts\" --out \"$destDir/$pkgName.pkg\" --target 10.5 --domain system --id org.lyrion.music.Squeezebox --version 1.0 --resources \"$buildDir/platforms/osx/Installer/l10n\" --title \"Lyrion Music Server\"");
-
-		# add localized resource files to the package
-		print "\nINFO: Add localized resource files to package...\n";
-
-		rmtree("$buildDir/lms_tmp");
-
-		# we need to manually modify the Distribution file in the package to make it recognize the localizations - known bug in packagemaker
-		system("pkgutil --expand \"$destDir/$pkgName.pkg\" $buildDir/lms_tmp");
-
-		require File::Slurp;
-
-		my $distributionXML = File::Slurp::read_file("$buildDir/lms_tmp/Distribution");
-		$distributionXML =~ s/(<\/title>)/$1\n<welcome file="Welcome"\/>\n<background file="background" alignment="topleft" scaling="none"\/>/;
-		$distributionXML =~ s/(<choice) /$1 customLocation="\/Library\/PreferencePanes" /;
-		File::Slurp::write_file("$buildDir/lms_tmp/Distribution", $distributionXML);
-
-		opendir my ($dirh), "$buildDir/lms_tmp/Resources/";
-
-		# copy the background image in each localization's folder
-		for ( readdir $dirh ) {
-			my $f = "$buildDir/lms_tmp/Resources/$_";
-			if ( $f =~ /\.lproj$/i && -d $f ) {
-				copy("$buildDir/platforms/osx/Installer/installer_osx.png", "$f/background");
-			}
-		}
-
-		closedir $dirh;
-
-		system("pkgutil --flatten $buildDir/lms_tmp \"$destDir/$pkgName.pkg\"");
-	}
-}
-
-
-##############################################################################################
 ## Build the macOS package
 ##############################################################################################
 sub buildMacOS {
@@ -755,7 +653,7 @@ sub buildMacOS {
 		print "INFO: Building package for macOS (Universal)... \n";
 
 		## First, lets make sure we get rid of the files we don't need for this install
-		foreach (split(/ /, $dirsToExcludeForMacOSX)) {
+		foreach (split(/ /, $dirsToExcludeForMacOS)) {
 			print "INFO: Removing $_ files from buildDir...\n";
 			system("find $buildDir | grep -i $_ | xargs rm -rf ");
 		}
@@ -834,200 +732,6 @@ sub buildMacOS {
 	}
 }
 
-##############################################################################################
-## Build the Windows32 Installer
-##############################################################################################
-sub buildWin32 {
-	## Grab the variables passed to us...
-	if ( ($_[0] ) || die("Problem: Not all of the variables were passed to the BuildWin32 function...") ) {
-		## Take the filename passed to us and make sure that we build the DMG with
-		## that name, and that the 'pretty mounted name' also matches
-		my $destFileName = $_[0];
-
-		if ( $releaseType && $releaseType eq "release" ) {
-			$destFileName =~ s/-$revision//;
-		}
-
-		print "INFO: Building Win32 Installer Package...\n";
-
-		## First, lets make sure we get rid of the files we don't need for this install
-		foreach (split(/ /, $dirsToExcludeForWin32)) {
-			print "INFO: Removing $_ files from buildDir...\n";
-			system("find $buildDir | grep -i $_ | xargs rm -rf ");
-		}
-
-		print "INFO: Creating $buildDir/build for the final packaging...\n";
-		mkpath("$buildDir/build");
-
-		print "INFO: Copying server directory to $buildDir/build...\n";
-		system("cp -R $buildDir/server \"$buildDir/build/server\" ");
-
-		print "INFO: Copying various documents to $buildDir/build...\n";
-		copy("$buildDir/server/CHANGELOG.html", "$buildDir/build/Release Notes.html");
-		copy("$buildDir/server/license.txt", "$buildDir/build/License.txt");
-
-		# This used to copy Wx code into the system Perl dir, this shouldn't be done in a build script
-		#print "INFO: Copying additional perl modules to $windowsPerlDir\\site...\n";
-		#system("cp -R $buildDir/platforms/win32/lib/perl5/* \"$windowsPerlDir/site\" ");
-
-		my $rev = int(($revision || getRevisionForRepo() || $version) / 3600) % 65536;
-		my @versionInfo = (
-			"CompanyName=Lyrion Community",
-			"FileVersion=$rev",
-			"LegalCopyright=Copyright 2001-2024 Lyrion Community",
-			"ProductVersion=$version",
-			"ProductName=Lyrion Music Server",
-		);
-
-
-		print "INFO: Building SqueezeTray executable...\n";
-
-		my $programInfo = join(';', @versionInfo, (
-			"FileDescription=Lyrion Music Server Tray Icon",
-			"OriginalFilename=SqueezeTray",
-			"InternalName=SqueezeTray",
-		));
-
-		system("cd $buildDir/platforms/win32; perltray --perl \"$windowsPerlPath\" --info \"$programInfo\" SqueezeTray.perltray");
-		move("$buildDir/platforms/win32/SqueezeTray.exe", "$buildDir/build/SqueezeTray.exe");
-		copy("$buildDir/platforms/win32/strings.txt", "$buildDir/build/strings.txt");
-
-		print "INFO: Building Lyrion Music Server Service Helper executable...\n";
-
-
-		$programInfo = join(';', @versionInfo, (
-			"FileDescription=Lyrion Music Server Service Helper",
-			"OriginalFilename=squeezesvc",
-			"InternalName=squeezesvc",
-		));
-
-		system("cd $buildDir/platforms/win32; perlapp --perl \"$windowsPerlPath\" --info \"$programInfo\" --clean --bind=grant.exe[file=../../server/Bin/MSWin32-x86-multi-thread/grant.exe,mode=666] --force squeezesvc.pl");
-		move("$buildDir/platforms/win32/squeezesvc.exe", "$buildDir/build/server/squeezesvc.exe");
-
-
-		print "INFO: Building Lyrion Music Server executable for server...\n";
-
-		$programInfo = join(';', @versionInfo, (
-			"FileDescription=Lyrion Music Server",
-			"OriginalFilename=SqueezeboxServer",
-			"InternalName=SqueezeboxServer",
-		));
-
-		system("cd $buildDir/server; perlsvc --perl \"$windowsPerlPath\" --info \"$programInfo\" --verbose ../platforms/win32/squeezecenter.perlsvc");
-		move("$buildDir/server/slimserver.exe", "$buildDir/build/server/SqueezeSvr.exe");
-
-
-		print "Making scanner executable...\n";
-
-		$programInfo = join(';', @versionInfo, (
-			"FileDescription=Lyrion Music Server Scanner",
-			"OriginalFilename=Scanner",
-			"InternalName=Scanner",
-		));
-
-		system("cd $buildDir/server; perlapp --perl \"$windowsPerlPath\" --info \"$programInfo\" ../platforms/win32/scanner.perlapp");
-		move("$buildDir/server/scanner.exe", "$buildDir/build/server/scanner.exe");
-
-
-		print "Making control panel executable...\n";
-
-		$programInfo = join(';', @versionInfo, (
-			"FileDescription=Lyrion Music Server Control Panel",
-			"OriginalFilename=Cleanup",
-			"InternalName=Cleanup",
-		));
-
-		system("cd $buildDir/server; perlapp --perl \"$windowsPerlPath\" --info \"$programInfo\" ../platforms/win32/cleanup.perlapp");
-		move("$buildDir/server/cleanup.exe", "$buildDir/build/server/squeezeboxcp.exe");
-
-
-		print "INFO: Removing files we don't want to have in the binary distribution...\n";
-		rmtree("$buildDir/build/server/CPAN");
-		rmtree("$buildDir/build/server/lib");
-
-		foreach (qw(Buttons Control Display Formats GUI Hardware Media Menu Music Networking Player Schema Utils Web)) {
-			rmtree("$buildDir/build/server/Slim/$_");
-		}
-
-		unlink("$buildDir/build/server/Slim/Plugin/Base.pm");
-		unlink("$buildDir/build/server/Slim/Plugin/OPMLBased.pm");
-		unlink("$buildDir/build/server/Slim/bootstrap.pm");
-		unlink("$buildDir/build/server/Slim/Formats.pm");
-		unlink("$buildDir/build/server/Slim/Schema.pm");
-		unlink("$buildDir/build/server/cleanup.pl");
-		unlink("$buildDir/build/server/slimserver.pl");
-		unlink("$buildDir/build/server/slimservice.pl");
-		unlink("$buildDir/build/server/scanner.pl");
-		rmtree("$buildDir/build/server/t");
-
-		print "INFO: Making installer...\n";
-
-		copy("$buildDir/platforms/win32/installer/ServiceManager.iss", "$buildDir/build");
-		copy("$buildDir/platforms/win32/installer/SocketTest.iss", "$buildDir/build") || die ($!);
-		copy("$buildDir/platforms/win32/installer/strings.iss", "$buildDir/build");
-		copy("$buildDir/platforms/win32/installer/psvince.dll", "$buildDir/build");
-		copy("$buildDir/platforms/win32/installer/sockettest.dll", "$buildDir/build");
-		copy("$buildDir/platforms/win32/installer/ApplicationData.xml", "$buildDir/build");
-		copy("$buildDir/platforms/win32/lib/vcredist.exe", "$buildDir/build");
-
-		copy("$buildDir/platforms/win32/InnoSetup/Languages/Danish.isl", "$buildDir/build");
-		copy("$buildDir/platforms/win32/InnoSetup/Languages/Dutch.isl", "$buildDir/build");
-		copy("$buildDir/platforms/win32/InnoSetup/Default.isl", "$buildDir/build");
-		copy("$buildDir/platforms/win32/InnoSetup/Languages/Finnish.isl", "$buildDir/build");
-		copy("$buildDir/platforms/win32/InnoSetup/Languages/French.isl", "$buildDir/build");
-		copy("$buildDir/platforms/win32/InnoSetup/Languages/German.isl", "$buildDir/build");
-		copy("$buildDir/platforms/win32/InnoSetup/Languages/Hebrew.isl", "$buildDir/build");
-		copy("$buildDir/platforms/win32/InnoSetup/Languages/Italian.isl", "$buildDir/build");
-		copy("$buildDir/platforms/win32/InnoSetup/Languages/Norwegian.isl", "$buildDir/build");
-		copy("$buildDir/platforms/win32/InnoSetup/Languages/Spanish.isl", "$buildDir/build");
-		copy("$buildDir/platforms/win32/InnoSetup/Languages/Czech.isl", "$buildDir/build");
-		copy("$buildDir/platforms/win32/InnoSetup/Languages/Polish.isl", "$buildDir/build");
-		copy("$buildDir/platforms/win32/InnoSetup/Languages/Russian.isl", "$buildDir/build");
-		# Swedish is 3rd party - we keep it in our installer folder
-		copy("$buildDir/platforms/win32/installer/Swedish.isl", "$buildDir/build");
-
-		copy("$buildDir/platforms/win32/installer/logo.bmp", "$buildDir/build");
-		copy("$buildDir/platforms/win32/installer/squeezebox.bmp", "$buildDir/build");
-
-		# replacing build number in installer script
-		system("sed -e \"s/VersionInfoVersion=0.0.0.0/VersionInfoVersion=$rev/\" \"$buildDir/platforms/win32/installer/SqueezeCenter.iss\" > \"$buildDir/build/SqueezeCenter.iss\"");
-		system("cd $buildDir/build; \"$buildDir/platforms/win32/InnoSetup/ISCC.exe\" \/Q SqueezeCenter.iss ");
-
-		unlink("$buildDir/build/SqueezeCenter.iss");
-		unlink("$buildDir/build/ServiceManager.iss");
-		unlink("$buildDir/build/SocketTest.iss");
-		unlink("$buildDir/build/StartupModeWizardPage.iss");
-		unlink("$buildDir/build/ServiceEnabler.iss");
-
-		unlink("$buildDir/build/psvince.dll");
-		unlink("$buildDir/build/sockettest.dll");
-		unlink("$buildDir/build/ApplicationData.xml");
-		unlink("$buildDir/build/logo.bmp");
-		unlink("$buildDir/build/strings.iss");
-
-		unlink("$buildDir/build/Danish.isl");
-		unlink("$buildDir/build/Default.isl");
-		unlink("$buildDir/build/Dutch.isl");
-		unlink("$buildDir/build/English.isl");
-		unlink("$buildDir/build/Finnish.isl");
-		unlink("$buildDir/build/French.isl");
-		unlink("$buildDir/build/German.isl");
-		unlink("$buildDir/build/Hebrew.isl");
-		unlink("$buildDir/build/Norwegian.isl");
-		unlink("$buildDir/build/Italian.isl");
-		unlink("$buildDir/build/Spanish.isl");
-		unlink("$buildDir/build/Swedish.isl");
-		unlink("$buildDir/build/Czech.isl");
-		unlink("$buildDir/build/Polish.isl");
-		unlink("$buildDir/build/Russian.isl");
-
-		print "INFO: Everything is finally ready, renaming the .exe and zip files...\n";
-		print "INFO: Moving [$buildDir/build/Output/SqueezeSetup.exe] to [$destDir/$destFileName.exe]\n";
-		move("$buildDir/build/Output/SqueezeSetup.exe", "$destDir/$destFileName.exe");
-
-		rmtree("$buildDir/build/Output");
-	}
-}
 
 ##############################################################################################
 ## Build the Windows64 Installer
