@@ -19,8 +19,7 @@ sub initDetails {
 sub initPrefs {
 	my ($class, $prefs) = @_;
 
-	# $prefs->{wizardDone} = 1;
-	$prefs->{libraryname} = Slim::Utils::Strings::string('SQUEEZEBOX_SERVER');
+	$prefs->{libraryname} = 'Lyrion Music Server (Docker)';
 
 	if (-d MUSIC_DIR) {
 		$prefs->{mediadirs} = $prefs->{ignoreInImageScan} = $prefs->{ignoreInVideoScan} = [ MUSIC_DIR ];
