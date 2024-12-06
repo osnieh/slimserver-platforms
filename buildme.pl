@@ -778,6 +778,7 @@ sub buildWin64 {
 		copy("$buildDir/platforms/win32/installer/sockettest.dll", "$buildDir/build");
 		copy("$buildDir/platforms/win32/installer/ApplicationData.xml", "$buildDir/build");
 		copy("$buildDir/platforms/win32/installer/instsvc.pl", "$buildDir/build");
+		copy("$buildDir/platforms/win32/installer/7z.exe", "$buildDir/build");
 		copy("$buildDir/platforms/win32/res/SqueezeCenter.ico", "$buildDir/build");
 		copy("$buildDir/platforms/win32/res/SqueezeCenterOff.ico", "$buildDir/build");
 		copy("$buildDir/server/Bin/MSWin32-x64-multi-thread/grant.exe", "$buildDir/build");
