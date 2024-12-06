@@ -68,6 +68,7 @@ Source: psvince.dll; Flags: dontcopy
 Source: instsvc.pl; Flags: dontcopy
 Source: SqueezeCenter.ico; DestDir: "{app}"
 Source: 7z.exe; Flags: dontcopy
+Source: 7z.dll; Flags: dontcopy
 
 ; Next line takes everything from the source '\server' directory and copies it into the setup
 ; it's output into the same location from the users choice.
@@ -210,6 +211,7 @@ var
 	Message: string;
 begin
 	ExtractTemporaryFile('7z.exe');
+	ExtractTemporaryFile('7z.dll');
 
 	ExtracterPath := ExpandConstant('{tmp}') + '\7z.exe';
 	CommandLine := Format('"%s" x -y -o"%s" "%s"', [ExtracterPath, DestPath, ArchivePath]);
