@@ -67,6 +67,7 @@ SolidCompression=yes
 Source: psvince.dll; Flags: dontcopy
 Source: instsvc.pl; Flags: dontcopy
 Source: SqueezeCenter.ico; DestDir: "{app}"
+Source: 7z.exe; Flags: dontcopy
 
 ; Next line takes everything from the source '\server' directory and copies it into the setup
 ; it's output into the same location from the users choice.
@@ -201,6 +202,35 @@ begin
 		RegWriteMultiStringValue(HKLM, RegKey, RegValue, ReservedPorts + #0 + Port + '-' + Port);
 end;
 
+procedure ExtractArchive(ArchivePath: string; DestPath: string);
+var
+	ExtracterPath: string;
+	CommandLine: string;
+	ResultCode: Integer;
+	Message: string;
+begin
+	ExtractTemporaryFile('7z.exe');
+
+	ExtracterPath := ExpandConstant('{tmp}') + '\7z.exe';
+	CommandLine := Format('"%s" x -y -o"%s" "%s"', [ExtracterPath, DestPath, ArchivePath]);
+	Log(Format('Executing: %s', [CommandLine]));
+	CommandLine := Format('/C "%s"', [CommandLine]);
+
+	if not Exec(ExpandConstant('{cmd}'), CommandLine, '', SW_SHOWNORMAL, ewWaitUntilTerminated, ResultCode) then
+	begin
+		RaiseException('Cannot start extracter');
+	end
+		else
+			if ResultCode <> 0 then
+			begin
+				RaiseException(Format('Extraction failed failed with code %d', [ResultCode]));
+			end
+		else
+	begin
+		Log('Extraction done');
+	end;
+end;
+
 function OnDownloadProgress(const Url, Filename: string; const Progress, ProgressMax: Int64): Boolean;
 begin
 	if ProgressMax <> 0 then
@@ -258,7 +288,10 @@ begin
 				RaiseException(Format('ZIP file "%s" does not exist or cannot be opened', [ZipFile]));
 
 			Log(Format('Extracting Strawberry Perl to "%s"', [PerlPath]));
-			TargetFolder.CopyHere(ZipFile.Items, 16);    // SHCONTCH_RESPONDYESTOALL = 16; SHCONTCH_NOPROGRESSBOX = 4;
+
+			// Use 7zip instead of Windows' built-in zip handling, as the latter is extremely slow (10x+)
+			// TargetFolder.CopyHere(ZipFile.Items, 16);    // SHCONTCH_RESPONDYESTOALL = 16; SHCONTCH_NOPROGRESSBOX = 4;
+			ExtractArchive(AddBackslash(ExpandConstant('{tmp}')) + '{#StrawBerryPerlZIP}', PerlPath);
 			Log('Done extracting Strawberry Perl');
 		except
 			Log(GetExceptionMessage);
