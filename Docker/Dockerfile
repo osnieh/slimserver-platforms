@@ -32,6 +32,14 @@ COPY . /lms
 COPY Slim-Utils-OS-Custom.pm /lms/Slim/Utils/OS/Custom.pm
 RUN chown -R squeezeboxserver:nogroup /config /playlist && chmod -R a+rX /lms
 
+# create symlinks to some crypto libraries, or the bridge plugins will fail
+RUN if [ -f /usr/lib/aarch64-linux-gnu/libssl.so.3 ];      then ln -s /usr/lib/aarch64-linux-gnu/libssl.so.3 /usr/lib/aarch64-linux-gnu/libssl.so; fi
+RUN if [ -f /usr/lib/aarch64-linux-gnu/libcrypto.so.3 ];   then ln -s /usr/lib/aarch64-linux-gnu/libcrypto.so.3 /usr/lib/aarch64-linux-gnu/libcrypto.so; fi
+RUN if [ -f /usr/lib/x86_64-linux-gnu/libssl.so.3 ];       then ln -s  /usr/lib/x86_64-linux-gnu/libssl.so.3 /usr/lib/x86_64-linux-gnu/libssl.so; fi
+RUN if [ -f /usr/lib/x86_64-linux-gnu/libcrypto.so.3 ];    then ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so.3 /usr/lib/x86_64-linux-gnu/libcrypto.so; fi
+RUN if [ -f /usr/lib/arm-linux-gnueabihf/libssl.so.3 ];    then ln -s /usr/lib/arm-linux-gnueabihf/libssl.so.3 /usr/lib/arm-linux-gnueabihf/libssl.so; fi
+RUN if [ -f /usr/lib/arm-linux-gnueabihf/libcrypto.so.3 ]; then ln -s /usr/lib/arm-linux-gnueabihf/libcrypto.so.3 /usr/lib/arm-linux-gnueabihf/libcrypto.so; fi
+
 VOLUME /config /music /playlist
 
 EXPOSE 3483 3483/udp ${HTTP_PORT} 9090
