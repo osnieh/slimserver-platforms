@@ -105,8 +105,7 @@ Type: dirifempty; Name: {app}\server\SQL
 [Run]
 Filename: {sys}\sc.exe; Parameters: "failure {#ServiceName} reset= 180 actions= restart/1000/restart/1000/restart/1000"; Flags: runhidden
 Filename: {sys}\sc.exe; Parameters: "config {#ServiceName} start= delayed-auto"; Flags: runhidden
-Filename: {sys}\sc.exe; Parameters: "start {#ServiceName}"; Flags: runhidden; MinVersion: 0,4.00.1381
-Filename: "http://localhost:{code:GetHttpPort}"; Description: {cm:StartupSqueezeCenterWebInterface}; Flags: postinstall nowait skipifsilent shellexec unchecked
+Filename: "{code:WaitForService}"; Description: {cm:StartupSqueezeCenterWebInterface}; Flags: postinstall skipifsilent skipifdoesntexist unchecked
 
 ; Remove old firewall rules, then add new
 Filename: "netsh"; Parameters: "advfirewall firewall delete rule name=""Lyrion Music Server"""; Flags: runhidden
@@ -351,8 +350,8 @@ begin
 			ProgressPage := CreateOutputProgressPage(CustomMessage('RegisterServices'), CustomMessage('RegisterServicesDesc'));
 
 			try
-				ProgressPage.Show;
-				ProgressPage.setProgress(0, 170);
+				ProgressPage.Show();
+				ProgressPage.setProgress(0, 100);
 
 				// check network configuration and potential port conflicts
 				ProgressPage.setText(CustomMessage('ProgressForm_Description'), CustomMessage('PortConflict'));
@@ -395,15 +394,57 @@ begin
 				RegisterPort('9090');
 				RegisterPort('3483');
 
+				ProgressPage.setProgress(ProgressPage.ProgressBar.Position+10, ProgressPage.ProgressBar.Max);
+
 				ExtractTemporaryFile('instsvc.pl');
 				if not FileExists(ExpandConstant('{tmp}\instsvc.pl')) then
 					Log('Failed to extract ' + ExpandConstant('{tmp}\instsvc.pl'))
 				else
 					Exec(ExpandConstant('{app}\{#LMSPerlBin}'), ExpandConstant('{tmp}\instsvc.pl "' + NewServerDir + 'slimserver.pl"'), '', SW_HIDE, ewWaitUntilIdle, ErrorCode);
+
+				ProgressPage.setProgress(ProgressPage.ProgressBar.Position+10, ProgressPage.ProgressBar.Max);
+
+				Exec(AddBackslash(ExpandConstant('{sys}')) + 'sc.exe', 'start {#ServiceName}', '', SW_HIDE, ewWaitUntilIdle, ErrorCode);
+
+				ProgressPage.setProgress(ProgressPage.ProgressBar.Position+10, ProgressPage.ProgressBar.Max);
 			finally
 				ProgressPage.Hide;
 			end;
 		end;
+end;
+
+function WaitForService(Param: String): String;
+var
+	Wait, ErrorCode: Integer;
+begin
+	// wait up to x seconds for the services to be started
+	Wait := 30;
+
+	while (Wait > 0) do
+		begin
+			Log('Waiting for the server to be running...' + IntToStr(Wait));
+
+			// no need to spend a full second, as we'll waste more time trying to connect below
+			Sleep(250);
+
+			if IsPortOpen('127.0.0.1', GetHttpPort('')) then
+				begin
+					Log('Service is reachable');
+					break;
+				end
+
+			else if (IsServiceRunning('{#ServiceName}')) then
+				begin
+					Log('Service is running');
+					break;
+				end;
+
+			Wait := Wait - 1;
+		end;
+
+	ShellExecAsOriginalUser('', 'http://localhost:' + GetHttpPort(''), '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
+
+	Result := '';
 end;
 
 function GetCustomSetupExitCode: Integer;
