@@ -8,7 +8,7 @@ use File::Spec::Functions qw(catfile);
 use Text::Unidecode;
 
 sub handleAction {
-	my ($httpPort, $update) = @_;
+	my $httpPort = main::getPort();
 
 	my $item = getMenuItem();
 
@@ -32,12 +32,18 @@ sub handleAction {
 		runScript('create-launchitem.sh');
 	}
 	elsif ($item eq 'UPDATE_AVAILABLE') {
-		system("open \"$update\"");
-		my $title = main::getString('UPDATE_TITLE');
-		my $message = main::getString('INSTALL_UPDATE');
-		print("ALERT:$title|$message\n");
-		# TODO - we don't quit yet, as the user will have to stop the service first... needs more work!
-		# print("QUITAPP\n");
+		if (my $update = main::getUpdate()) {
+			runScript('stop-server.sh');
+			unlink main::getVersionFile();
+			system("open \"$update\"");
+			print("QUITAPP\n");
+		}
+		# if we can't find the installer, fall back to showing instructions
+		else {
+			my $title = main::getString('UPDATE_TITLE');
+			my $message = main::getString('INSTALL_UPDATE');
+			print("ALERT:$title|$message\n");
+		}
 	}
 	elsif ($item eq 'UNINSTALL_PREFPANE') {
 		system("open https://lyrion.org/reference/uninstall-legacy-mac/");

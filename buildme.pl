@@ -707,7 +707,7 @@ sub buildMacOS {
 		if (`which npx`) {
 			print "INFO: Building $pkgName.dmg using $realName.app...\n";
 			# system("cd $destDir; npx --yes create-dmg --overwrite '$realName.app'; mv -f L*.dmg '$pkgName.dmg'");
-			system("cd $buildDir/platforms/osx/MenuBarItem && cp *png $destDir/ && cp icon.icns $destDir/ && cp app.json $destDir/");
+			system("cd $buildDir/platforms/osx/MenuBarItem && cp *png *webloc icon.icns app.json $destDir/");
 
 			# add signing information if available
 			if ($hasCerts) {
@@ -718,7 +718,7 @@ sub buildMacOS {
 			}
 
 			system("cd $destDir; npx --yes appdmg\@0.6.6 app.json LMS.dmg; mv -f LMS.dmg '$pkgName.dmg'");
-			system("cd $destDir; rm -rf *.png icon.icns app.json L*.app");
+			system("cd $destDir; rm -rf *.png icon.icns app.json *webloc L*.app");
 
 			if ($hasCerts) {
 				print "INFO: Notarizing $pkgName.dmg...";

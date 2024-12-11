@@ -39,14 +39,14 @@ sub getPort {
 }
 
 sub getUpdate {
-	my $updatesFile = catfile(getPref('cachedir'), 'updates', 'server.version');
+	my $updatesFile = getVersionFile();
 	my $update;
 
 	if (-r $updatesFile) {
 		open(UPDATE, '<', $updatesFile) or return;
-		chomp $_;
 
 		while (<UPDATE>) {
+			chomp;
 			if ($_ && -r $_) {
 				$update = $_;
 				last;
@@ -57,6 +57,10 @@ sub getUpdate {
 	}
 
 	return $update;
+}
+
+sub getVersionFile {
+	return catfile(main::getPref('cachedir'), 'updates', 'server.version')
 }
 
 sub getPref {
@@ -98,19 +102,15 @@ sub getPrefPane {
 	-e '/Library/PreferencePanes/Squeezebox.prefPane' || -e catfile($ENV{HOME}, 'Library/PreferencePanes/Squeezebox.prefPane');
 }
 
-my $httpPort = getPort();
-my $update = getUpdate();
-my $hasPrefPane = getPrefPane();
-
 if (scalar @ARGV > 0) {
-	LMSMenuAction::handleAction($httpPort, $update);
+	LMSMenuAction::handleAction();
 }
 else {
 	my $autoStartItem = -f catfile($ENV{HOME}, 'Library', 'LaunchAgents', 'org.lyrion.lyrionmusicserver.plist')
 		? 'AUTOSTART_ON'
 		: 'AUTOSTART_OFF';
 
-	if ($httpPort) {
+	if (getPort()) {
 		printMenuItem('OPEN_GUI');
 		printMenuItem('OPEN_SETTINGS');
 		print("----\n");
@@ -122,13 +122,12 @@ else {
 		printMenuItem($autoStartItem);
 	}
 
-	if ($update) {
+	if (getUpdate()) {
 		print("----\n");
 		printMenuItem('UPDATE_AVAILABLE');
-		# print("STATUSTITLE|✨\n");
 	}
 
-	if ($hasPrefPane) {
+	if (getPrefPane()) {
 		print("----\n");
 		printMenuItem('UNINSTALL_PREFPANE');
 	}
