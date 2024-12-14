@@ -74,7 +74,7 @@ end;
 
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 begin
-	if not FileExists(ExpandConstant('{app}\{#LMSPerlBin}')) then
+	if not FileExists(ExpandConstant('{src}\{#LMSPerlBin}')) and not FileExists(ExpandConstant('{app}\{#LMSPerlBin}')) then
 	begin
 		Log(ExpandConstant('{cm:ServiceEnablerNeedsLMS}'));
 		Result := ExpandConstant('{cm:ServiceEnablerNeedsLMS}');
