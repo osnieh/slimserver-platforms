@@ -48,6 +48,9 @@ sub handleAction {
 	elsif ($item eq 'UNINSTALL_PREFPANE') {
 		system("open https://lyrion.org/reference/uninstall-legacy-mac/");
 	}
+	elsif ($item eq 'SERVICE_STARTING') {
+		# nothing to do here...
+	}
 	else {
 		my $x = unidecode(join(' ', @ARGV));
 		print "ALERT:Selected Item...|$item $x\n";

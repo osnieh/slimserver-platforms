@@ -38,6 +38,10 @@ sub getPort {
 	return;
 }
 
+sub isProcessRunning {
+	return `ps -axww | grep "slimserver.pl" | grep -v grep`;
+}
+
 sub getUpdate {
 	my $updatesFile = getVersionFile();
 	my $update;
@@ -90,6 +94,36 @@ sub getString {
 	return $STRINGS->{$token}->{$lang} || $STRINGS->{$token}->{EN};
 }
 
+sub serverRequest {
+	my $port = shift;
+
+	my $postdata;
+	eval { $postdata = '{"id":1,"method":"slim.request","params":["",' . encode_json(\@_) . ']}' };
+
+	return if $@ || !$postdata;
+
+	require HTTP::Tiny;
+
+	HTTP::Tiny->new(
+		timeout => 2,
+	)->request('POST', "http://127.0.0.1:$port/jsonrpc.js", {
+		headers => {
+			'Content-Type' => 'application/json',
+		},
+		content => $postdata,
+	});
+
+	# Should we ever be interested in the result, uncomment the following lines:
+	# my $content = $res->{content} if $res->{success};
+	# if ($content) {
+	# 	eval {
+	# 		$content = decode_json($content);
+	# 	}
+	# }
+
+	# return $content;
+}
+
 sub printMenuItem {
 	my ($token, $icon) = @_;
 	$icon = "MENUITEMICON|$icon|" if $icon;
@@ -110,15 +144,17 @@ else {
 		? 'AUTOSTART_ON'
 		: 'AUTOSTART_OFF';
 
-	if (getPort()) {
+	if (my $port = getPort()) {
 		printMenuItem('OPEN_GUI');
 		printMenuItem('OPEN_SETTINGS');
 		print("----\n");
 		printMenuItem('STOP_SERVICE');
 		printMenuItem($autoStartItem);
+
+		serverRequest($port, 'pref', 'macMenuItemActive', time());
 	}
 	else {
-		printMenuItem('START_SERVICE');
+		printMenuItem(isProcessRunning() ? 'SERVICE_STARTING' : 'START_SERVICE');
 		printMenuItem($autoStartItem);
 	}
 

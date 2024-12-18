@@ -23,6 +23,12 @@
 		"FR": "Démarrer le service",
 		"NL": "Service starten"
 	},
+	"SERVICE_STARTING": {
+		"DE": "Dienst wird gestartet...",
+		"EN": "Service is starting up...",
+		"FR": "Le service démarre...",
+		"NL": "De service begint..."
+	},
 	"AUTOSTART_ON": {
 		"DE": "✓ Dienst automatisch ausführen",
 		"EN": "✓ Run Service automatically",
