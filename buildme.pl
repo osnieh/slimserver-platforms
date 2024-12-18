@@ -690,7 +690,12 @@ sub buildMacOS {
 		move("$buildDir/perl/bin/perl", "$buildDir/$pkgName.app/Contents/MacOS/perl");
 		system("cp -R '$buildDir/perl/lib' '$buildDir/$pkgName.app/Contents/'");
 		system("cd '$buildDir/$pkgName.app/Contents/Resources/server/Bin/darwin' && rm -f mac; mv * '$buildDir/$pkgName.app/Contents/MacOS'");
-		system("cd $buildDir && rm -rf '$destDir/$realName.app' && mv '$pkgName.app' '$destDir/$realName.app'");
+
+		# prepare the launcher app
+		system("cd $destDir && rm -rf '$realName.app' && cp -r '$buildDir/platforms/osx/LauncherHelper/$realName.app' .");
+
+		# copy the menu bar item inside the launcher
+		system("cd $buildDir && mv '$pkgName.app' '$destDir/$realName.app/Contents/MacOS/$realName.app'");
 
 		# see whether we have certificates to sign the binaries
 		# "$ENV{HOME}/Library/Developer/Xcode/UserData/Provisioning\ Profiles/build_pp.provisionprofile";
@@ -699,7 +704,9 @@ sub buildMacOS {
 			$hasCerts = 1;
 			print "INFO: Signing $realName.app...\n";
 			# we must --force the signature to replace existing signatures
-			system("cd '$destDir/$realName.app/Contents/MacOS/'; ls | grep -v Server | xargs codesign -s \"$ENV{DEV_CERT_NAME}\" -o runtime --force ");
+			# the menu bar item is inside the launcher, so we need to sign it twice
+			system("cd '$destDir/$realName.app/Contents/MacOS/$realName.app/Contents/MacOS/'; ls | grep -v Server | xargs codesign -s \"$ENV{DEV_CERT_NAME}\" -o runtime --force ");
+			system("cd '$destDir/$realName.app/Contents/MacOS/'; codesign -s \"$ENV{DEV_CERT_NAME}\" -o runtime '$realName.app'");
 			system("codesign -v -s \"$ENV{DEV_CERT_NAME}\" -o runtime '$destDir/$realName.app'");
 		}
 
