@@ -94,34 +94,18 @@ sub getString {
 	return $STRINGS->{$token}->{$lang} || $STRINGS->{$token}->{EN};
 }
 
-sub serverRequest {
+# Dirty low level http request - optimized for speed. We don't even wait for a response...
+sub fireAndForgetServerRequest {
 	my $port = shift;
+	require Net::HTTP;
 
-	my $postdata;
-	eval { $postdata = '{"id":1,"method":"slim.request","params":["",' . encode_json(\@_) . ']}' };
-
-	return if $@ || !$postdata;
-
-	require HTTP::Tiny;
-
-	HTTP::Tiny->new(
-		timeout => 2,
-	)->request('POST', "http://127.0.0.1:$port/jsonrpc.js", {
-		headers => {
-			'Content-Type' => 'application/json',
-		},
-		content => $postdata,
-	});
-
-	# Should we ever be interested in the result, uncomment the following lines:
-	# my $content = $res->{content} if $res->{success};
-	# if ($content) {
-	# 	eval {
-	# 		$content = decode_json($content);
-	# 	}
-	# }
-
-	# return $content;
+	my $client  = Net::HTTP->new(Host => "127.0.0.1:$port") || die $@;
+	$client->write_request(POST => '/jsonrpc.js', 'Content-Type' => 'application/json', encode_json({
+		id => 1,
+		method => 'slim.request',
+		params => ['', \@_]
+	}));
+	$client->close;
 }
 
 sub printMenuItem {
@@ -145,13 +129,17 @@ else {
 		: 'AUTOSTART_OFF';
 
 	if (my $port = getPort()) {
+		my $pid = fork();
+		if (!$pid) {
+			fireAndForgetServerRequest($port, 'pref', 'macMenuItemActive', time());
+			exit;
+		}
+
 		printMenuItem('OPEN_GUI');
 		printMenuItem('OPEN_SETTINGS');
 		print("----\n");
 		printMenuItem('STOP_SERVICE');
 		printMenuItem($autoStartItem);
-
-		serverRequest($port, 'pref', 'macMenuItemActive', time());
 	}
 	else {
 		printMenuItem(isProcessRunning() ? 'SERVICE_STARTING' : 'START_SERVICE');
