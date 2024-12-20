@@ -101,7 +101,7 @@ If you're a developer you might want to install plugins manually, before they ar
 Starting with v8.4 an optional `EXTRA_ARGS` environment variable exists for passing additional arguments to Lyrion Music Server process. For example, disabling the web interface could be achieved with `EXTRA_ARGS="--noweb"`.
 
 ### Define the service's IP address
-Some plugins like eg. the Sounds & Effects, require the player to know the server's IP address. In the default `bridge` networking mode, the internal IP address would be different from what the player can see. Therefore playback would fail - unless we tell Lyrion Music Server what port to announce. This can be done using the above method to define the `--advertiseaddr` parameter:
+Some plugins like eg. the Sounds & Effects, require the player to know the server's IP address. In the default `bridge` networking mode, the internal IP address would be different from what the player can see. Therefore playback would fail - unless we tell Lyrion Music Server what port to announce. This can be done using the above method to define the `--advertiseaddr` parameter (do not put quotes around the parameter!):
 
 
 ```
@@ -115,7 +115,7 @@ docker run -it \
       -p 9090:9090/tcp \
       -p 3483:3483/tcp \
       -p 3483:3483/udp \
-      -e EXTRA_ARGS="--advertiseaddr=192.168.0.100" \
+      -e EXTRA_ARGS=--advertiseaddr=192.168.0.100 \
       lmscommunity/lyrionmusicserver
 ```
 
