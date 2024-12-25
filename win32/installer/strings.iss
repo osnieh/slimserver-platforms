@@ -504,6 +504,7 @@ ru.SqueezeCenterTrayTool=Утилита панели задач Lyrion Music Ser
 sv.SqueezeCenterTrayTool=Lyrion Music Server-systemfältsverktyg
 
 Start_LMS=Start Lyrion Music Server (if not configured to run as a service)
+da.Start_LMS=Start Lyrion Music Server (når denne ikke er konfigureret som en tjeneste)
 de.Start_LMS=Starte Lyrion Music Server (wenn nicht als Dienst konfiguriert)
 fr.Start_LMS=Démarrer Lyrion Music Server (si non configuré pour s'exécuter en tant que service)
 nl.Start_LMS=Start Lyrion Music Server (als deze niet als service is geconfigureerd)
@@ -677,11 +678,13 @@ ru.Startup_RadioAtBoot_Caption0=Запускать Lyrion Music Server &авто
 sv.Startup_RadioAtBoot_Caption0=Starta Lyrion Music Server &automatiskt när datorn startas.
 
 Startup_RadioAtBootCustom_Caption0=Start Lyrion Music Server &automatically using custom credentials.
+da.Startup_RadioAtBootCustom_Caption0=Start Lyrion Music Server automatisk med loginoplysninger.
 de.Startup_RadioAtBootCustom_Caption0=Lyrion Music Server &automatisch mit Anmeldedaten starten.
 fr.Startup_RadioAtBootCustom_Caption0=Démarrer le Lyrion Music Server &automatiquement avec vos informations d'authentification.
 nl.Startup_RadioAtBootCustom_Caption0=Lyrion Music Server &automatisch starten met aangepaste referenties.
 
 Startup_DisableService_Caption0=Disable Lyrion Music Server background service.
+da.Startup_DisableService_Caption0=Deaktivér Lyrion Music Server baggrundstjeneste.
 de.Startup_DisableService_Caption0=Lyrion Music Server Hintergrunddienst deaktivieren.
 fr.Startup_DisableService_Caption0=Désactiver le service d'arrière-plan du Lyrion Music Server.
 nl.Startup_DisableService_Caption0=Schakel de achtergronddienst van Lyrion Music Server uit.
@@ -715,11 +718,13 @@ ru.UninstallPrefs=Удалить все настройки и файлы жур�
 sv.UninstallPrefs=Vill du ta bort alla inställningar och loggfiler?
 
 RemoveLegacyFiles=Removing legacy files from earlier installations...
+da.RemoveLegacyFiles=Fjerner gamle filer fra tidligere installationer...
 de.RemoveLegacyFiles=Entferne nicht mehr benötigte Dateien...
 fr.RemoveLegacyFiles=Suppression des fichiers des installations précédentes...
 nl.RemoveLegacyFiles=Oude bestanden van eerdere installaties verwijderen...
 
 RemoveLegacyFilesWarning=Please be patient - this task can take several minutes.
+de.RemoveLegacyFilesWarning=Vær venligst tålmodig - dette kan tage flere minutter.
 de.RemoveLegacyFilesWarning=Bitte haben Sie Geduld - diese Aktion kann mehrere Minuten dauern.
 fr.RemoveLegacyFilesWarning=Soyez patient : cette tâche peut prendre plusieurs minutes.
 nl.RemoveLegacyFilesWarning=Wees geduldig - deze taak kan enkele minuten duren.
@@ -781,40 +786,49 @@ ru.WaitingForServices=Lyrion Music Server останавливается...
 sv.WaitingForServices=Väntar på att Lyrion Music Server stoppas ...
 
 PleaseInstallVCRedist2010=In order to install Lyrion Music Server on this computer you'll have to install the Microsoft Visual C++ 2010 Redistributable Package (x86).
+da.PleaseInstallVCRedist2010=For at kunne installere Lyrion Music Server på denne computer må du installere Microsoft Visual C++ 2010 Redistributable Package (x86).
 fr.PleaseInstallVCRedist2010=Pour installer le Lyrion Music Server sur cet ordinateur, vous devrez installer le package redistribuable Microsoft Visual C++ 2010 (x86).
 
 FindVCRedist2010Online=Please download it from the following link:%n%nhttps://www.microsoft.com/download/en/details.aspx?id=8328
+da.FindVCRedist2010Online=Venligst hent pakken fra følgende link: %n%nhttps://www.microsoft.com/download/en/details.aspx?id=8328
 fr.FindVCRedist2010Online=Veuillez le télécharger à partir du lien suivant :%n%nhttps://www.microsoft.com/download/en/details.aspx?id=8328
 
 FindVCRedist=You can find a copy of the package in the Software share of your WHS.
+da.FindVCRedist=Du kan finde en kopi af pakken i din WHS software share.
 fr.FindVCRedist=Vous pouvez trouver une copie du package dans le partage logiciel de votre WHS.
 
 StrawberryPerl=Strawberry Perl
 
 NeedStrawberryPerl=Strawberry Perl is required to run Lyrion Music Server
+da.NeedStrawberryPerl=Strawberry Perl er påkrævet for at kunne køre Lyrion Music Server
 de.NeedStrawberryPerl=Strawberry Perl wird für die Ausführung von Lyrion Music Server benötigt
 fr.NeedStrawberryPerl=Strawberry Perl est nécessaire pour exécuter le Lyrion Music Server
 nl.NeedStrawberryPerl=Strawberry Perl is nodig om Lyrion Music Server uit te voeren
 
 DownloadingPerl=Installation of Strawberry Perl is only required the first time you install.
+da.DownloadingPerl=Installation af Strawberry Perl er kun påkrævet første gang du installerer.
 de.DownloadingPerl=Die Installation von Strawberry Perl wird einmalig ausgeführt.
 fr.DownloadingPerl=L'installation de Strawberry Perl n'a lieu qu'une seule fois.
 nl.DownloadingPerl=De installatie van Strawberry Perl is alleen nodig bij de eerste installatie.
 
 InstallingPerl=Installing Strawberry Perl... This can take a while - please be patient!
+da.InstallingPerl=Installerer Strawberry Perl... Dette kan tage tid - vær venligst tålmodig!
 de.InstallingPerl=Installiere Strawberry Perl... Dies kann eine Weile dauern - danke für die Geduld!
 fr.InstallingPerl=Installation de Strawberry Perl... Cela peut prendre du temps. Merci pour votre patience !
 nl.InstallingPerl=Aardbei Perl installeren... Dit kan even duren - wees geduldig!
 
 ServiceEnablerNeedsLMS=Lyrion Music Server can't be found. Is it correctly installed?
+da.ServiceEnablerNeedsLMS=Lyrion Music Server er ikke fundet. Er det korrekt installeret?
 de.ServiceEnablerNeedsLMS=Lyrion Music Server kann nicht gefunden werden. Ist er korrekt installiert?
 fr.ServiceEnablerNeedsLMS=Le Lyrion Music Server est introuvable. Est-il installé correctement ?
 nl.ServiceEnablerNeedsLMS=Lyrion Music Server kan niet worden gevonden. Is het correct geïnstalleerd?
 
 MigrateToWin64=You seem to be running Windows 64-bit. %n%nWe recommend you install the 64-bit version of Lyrion Music Server. %n%nPress "Yes" to get more information, %n"No" to continue, or %n "Cancel" to abort the installion.
+da.MigrateToWin64=Det ser ud til at du kører Windows 64-bit. %n%nVi anbefaler at du installerer 64-bit versionen af Lyrion Music Server. %n%nTryk "Yes" for mere information,  %n"No" for at fortsætte, eller %n "Cancel" for at afbryde installionen.
 de.MigrateToWin64=Sie scheinen Windows 64-bit zu verwenden. %n%nWir empfehlen, Lyrion Music Server 64-bit zu installieren. %n%nDrücken Sie "Ja" für weitere Informationen, %n"Nein" um die Installation weiter zu führen oder %n"Abbrechen" um die Installation abzubrechen.
 fr.MigrateToWin64=Vous semblez utiliser Windows 64-bit. %n%nNous vous recommandons d'installer la version 64-bits de Lyrion Music Server. %n%nAppuyez sur « Oui » pour obtenir plus d'informations, %nsur « Non » pour continuer, ou %nsur « Annuler » pour interrompre l'installation.
 nl.MigrateToWin64=Het lijkt erop dat u Windows 64-bits gebruikt. %n%nWij raden u aan de 64-bits versie van Lyrion Music Server te installeren. %n%nDruk op "Yes" voor meer informatie, %n"No" om door te gaan, of %n"Cancel" om de installatie af te breken.
 
 MigrateToWin64InfoUrl=https://lyrion.org/reference/migrate-win32-win64/
 de.MigrateToWin64InfoUrl=https://lyrion.org/reference/migrate-win32-win64-de/
+
