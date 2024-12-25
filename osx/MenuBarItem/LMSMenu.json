@@ -1,65 +1,76 @@
 {
 	"OPEN_SETTINGS": {
+		"DA": "Åben indstillinger...",
 		"DE": "Einstellungen öffnen...",
 		"EN": "Open Settings...",
 		"FR": "Ouvrir les paramètres...",
 		"NL": "Instellingen openen..."
 	},
 	"STOP_SERVICE": {
+		"DA": "Stop tjeneste",
 		"DE": "Dienst stoppen",
 		"EN": "Stop Service",
 		"FR": "Arrêter le service",
 		"NL": "Stop service"
 	},
 	"OPEN_GUI": {
+		"DA": "Åben web-styring...",
 		"DE": "Web-Steuerung öffnen...",
 		"EN": "Open Web Control...",
 		"FR": "Ouvrir le contrôle Web...",
 		"NL": "Open Web Control..."
 	},
 	"START_SERVICE": {
+		"DA": "Start tjeneste",
 		"DE": "Dienst starten",
 		"EN": "Start Service",
 		"FR": "Démarrer le service",
 		"NL": "Service starten"
 	},
 	"SERVICE_STARTING": {
+		"DA": "Tjeneste starter...",
 		"DE": "Dienst wird gestartet...",
 		"EN": "Service is starting up...",
 		"FR": "Le service démarre...",
 		"NL": "De service begint..."
 	},
 	"AUTOSTART_ON": {
+		"DA": "✓ Kør tjeneste automatisk",
 		"DE": "✓ Dienst automatisch ausführen",
 		"EN": "✓ Run Service automatically",
 		"FR": "✓ Exécuter le service automatiquement",
 		"NL": "✓ Service automatisch uitvoeren"
 	},
 	"AUTOSTART_OFF": {
+		"DA": "Kør tjeneste automatisk",
 		"DE": "Dienst automatisch ausführen",
 		"EN": "Run Service automatically",
 		"FR": "Exécuter le service automatiquement",
 		"NL": "Service automatisch uitvoeren"
 	},
 	"UPDATE_AVAILABLE": {
+		"DA": "✨ En opdateret version er tilgængelig",
 		"DE": "✨ Eine aktualisierte Version ist verfügbar",
 		"EN": "✨ An updated version is available",
 		"FR": "✨ Une nouvelle version est disponible",
 		"NL": "✨ Een bijgewerkte versie is beschikbaar"
 	},
 	"UPDATE_TITLE": {
+		"DA": "Lyrion Music Server opdatering",
 		"DE": "Lyrion Music Server Aktualisierung",
 		"EN": "Lyrion Music Server Update",
 		"FR": "Mise à jour Lyrion Music Server",
 		"NL": "Lyrion Music Server Update"
 	},
 	"INSTALL_UPDATE": {
+		"DA": "For at opdatere din Lyrion Music Server, stop tjenesten, afslut punktet i menubjælken, og flyt \"Lyrion Music Server\" applikationen til dit \"Applications\" katalog.",
 		"DE": "Um die aktualisierte Version von Lyrion Music Server zu installieren, stoppen Sie den Dienst, beenden Sie das Element in der Menüzeile, und verschieben Sie die \"Lyrion Music Server\" Anwendung in den \"Programme\" Ordner.",
 		"EN": "In order to update your Lyrion Music Server, stop the service, quit the menu bar item, and move the \"Lyrion Music Server\" application to your \"Applications\" folder.",
 		"FR": "Pour mettre à jour votre Lyrion Music Server, arrêtez le service, quittez l'élément de la barre de menu et déplacez l'application « Lyrion Music Server » dans votre dossier « Applications ».",
 		"NL": "Om je Lyrion Music Server bij te werken, stop je de service, sluit je het menu af en verplaats je het programma \"Lyrion Music Server\" naar je map \"Toepassingen\"."
 	},
 	"UNINSTALL_PREFPANE": {
+		"DA": "🧹 Afinstaller gamle LMS systemindstillinger",
 		"DE": "🧹 Die alte LMS Systemeinstellung entfernen",
 		"EN": "🧹 How to uninstall the legacy Settings Pane",
 		"FR": "🧹 Désinstaller les anciens Réglages Système",
