@@ -153,8 +153,14 @@ begin
 	// Migrate legacy registry key
 	if (RegQueryStringValue(HKLM, '{#LegacyRegkey}', 'DataPath', DataPath)) then
 		begin
-			RegWriteStringValue(HKLM, '{#SBRegKey}', 'DataPath', DataPath);
+			RegWriteStringValue(HKLM64, '{#SBRegKey}', 'DataPath', DataPath);
 			RegDeleteValue(HKLM, '{#LegacyRegkey}', 'DataPath');
+		end;
+
+	if (RegQueryStringValue(HKLM, '{#SBRegKey}', 'DataPath', DataPath)) then
+		begin
+			RegWriteStringValue(HKLM64, '{#SBRegKey}', 'DataPath', DataPath);
+			RegDeleteValue(HKLM, '{#SBRegKey}', 'DataPath');
 		end;
 
 	if (not RegQueryStringValue(HKLM64, '{#SBRegKey}', 'DataPath', DataPath)) then
