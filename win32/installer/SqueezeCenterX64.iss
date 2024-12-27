@@ -86,7 +86,7 @@ Name: {group}\{cm:UninstallSqueezeCenter}; Filename: {uninstallexe}
 Name: {group}\{cm:Start_LMS}; Filename: "{app}\{#LMSPerlBin}"; Parameters: """{app}\server\slimserver.pl"""; WorkingDir: "{app}\server"; IconFilename: "{app}\SqueezeCenter.ico"; Flags: runminimized
 
 [Registry]
-Root: HKLM; Subkey: {#SBRegKey}; ValueType: string; ValueName: "DataPath"; ValueData: {code:GetWritablePath}
+Root: HKLM64; Subkey: {#SBRegKey}; ValueType: string; ValueName: "DataPath"; ValueData: {code:GetWritablePath}
 
 [InstallDelete]
 Type: filesandordirs; Name: {group}
@@ -157,7 +157,7 @@ begin
 			RegDeleteValue(HKLM, '{#LegacyRegkey}', 'DataPath');
 		end;
 
-	if (not RegQueryStringValue(HKLM, '{#SBRegKey}', 'DataPath', DataPath)) then
+	if (not RegQueryStringValue(HKLM64, '{#SBRegKey}', 'DataPath', DataPath)) then
 		begin
 
 			if ExpandConstant('{commonappdata}') = '' then
@@ -170,9 +170,7 @@ begin
 			else
 				DataPath := ExpandConstant('{commonappdata}');
 
-			DataPath := AddBackslash(DataPath) + 'Squeezebox';
-			// TODO - need to figure out what this value isn't stored in the registry
-			// DataPath := AddBackslash(DataPath) + '{#FolderName}';
+			DataPath := AddBackslash(DataPath) + ExpandConstant('{#FolderName}');
 		end;
 
 	Result := DataPath;
@@ -472,6 +470,7 @@ begin
 				begin
 					DelTree(GetWritablePath(''), True, True, True);
 					RegDeleteKeyIncludingSubkeys(HKLM, '{#SBRegKey}');
+					RegDeleteKeyIncludingSubkeys(HKLM64, '{#SBRegKey}');
 				end;
 		end;
 end;
