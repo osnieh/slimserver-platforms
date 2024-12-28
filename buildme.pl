@@ -760,7 +760,23 @@ sub buildMacOS {
 		$realName =~ s/(.)([A-Z])/$1 $2/g;
 		print "INFO: Building $realName.app with source from $buildDir/$pkgName...\n";
 
+		# prepare the launcher app
 		my @args = (
+			'--name', 'Lyrion Music Server',
+			'--interface-type', 'None',
+			'--author', 'Lyrion Community, Michael Herger',
+			'--app-version', $version,
+			'--app-icon', "$buildDir/platforms/osx/Preference\ Pane/icon.icns",
+			'--quit-after-execution',
+			'--overwrite',
+			"$buildDir/platforms/osx/MenuBarItem/LauncherHelper.sh",
+			"$destDir/$realName.app"
+		);
+
+		system("rm -rf '$destDir/$realName.app'");
+		system('platypus', @args);
+
+		@args = (
 			'--name', 'Lyrion Music Server',
 			'--interface-type', 'Status Menu',
 			'--author', 'Lyrion Community, Michael Herger',
@@ -792,9 +808,6 @@ sub buildMacOS {
 		move("$buildDir/perl/bin/perl", "$buildDir/$pkgName.app/Contents/MacOS/perl");
 		system("cp -R '$buildDir/perl/lib' '$buildDir/$pkgName.app/Contents/'");
 		system("cd '$buildDir/$pkgName.app/Contents/Resources/server/Bin/darwin' && rm -f mac; mv * '$buildDir/$pkgName.app/Contents/MacOS'");
-
-		# prepare the launcher app
-		system("cd $destDir && rm -rf '$realName.app' && cp -r '$buildDir/platforms/osx/LauncherHelper/$realName.app' .");
 
 		# copy the menu bar item inside the launcher
 		system("cd $buildDir && mv '$pkgName.app' '$destDir/$realName.app/Contents/MacOS/$realName.app'");
