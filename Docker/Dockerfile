@@ -10,7 +10,7 @@ ENV HTTP_PORT=9000
 # Install packages
 RUN apt-get update -qq  && \
 	apt-get install --no-install-recommends -qy wget curl perl tzdata libcrypt-blowfish-perl libwww-perl libfont-freetype-perl liblinux-inotify2-perl \
-	libdata-dump-perl libio-socket-ssl-perl libnet-ssleay-perl libcrypt-ssleay-perl libcrypt-openssl-rsa-perl libgomp1 libasound2 lame && \
+	libdata-dump-perl libio-socket-ssl-perl libnet-ssleay-perl libcrypt-ssleay-perl libcrypt-openssl-rsa-perl libssl-dev libgomp1 libasound2 lame && \
 	apt-get clean -qy && \
 	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -31,14 +31,6 @@ RUN mkdir -p /config /music /playlist /lms
 COPY . /lms
 COPY Slim-Utils-OS-Custom.pm /lms/Slim/Utils/OS/Custom.pm
 RUN chown -R squeezeboxserver:nogroup /config /playlist && chmod -R a+rX /lms
-
-# create symlinks to some crypto libraries, or the bridge plugins will fail
-RUN if [ -f /usr/lib/aarch64-linux-gnu/libssl.so.3 ];      then ln -s /usr/lib/aarch64-linux-gnu/libssl.so.3 /usr/lib/aarch64-linux-gnu/libssl.so; fi
-RUN if [ -f /usr/lib/aarch64-linux-gnu/libcrypto.so.3 ];   then ln -s /usr/lib/aarch64-linux-gnu/libcrypto.so.3 /usr/lib/aarch64-linux-gnu/libcrypto.so; fi
-RUN if [ -f /usr/lib/x86_64-linux-gnu/libssl.so.3 ];       then ln -s  /usr/lib/x86_64-linux-gnu/libssl.so.3 /usr/lib/x86_64-linux-gnu/libssl.so; fi
-RUN if [ -f /usr/lib/x86_64-linux-gnu/libcrypto.so.3 ];    then ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so.3 /usr/lib/x86_64-linux-gnu/libcrypto.so; fi
-RUN if [ -f /usr/lib/arm-linux-gnueabihf/libssl.so.3 ];    then ln -s /usr/lib/arm-linux-gnueabihf/libssl.so.3 /usr/lib/arm-linux-gnueabihf/libssl.so; fi
-RUN if [ -f /usr/lib/arm-linux-gnueabihf/libcrypto.so.3 ]; then ln -s /usr/lib/arm-linux-gnueabihf/libcrypto.so.3 /usr/lib/arm-linux-gnueabihf/libcrypto.so; fi
 
 VOLUME /config /music /playlist
 
