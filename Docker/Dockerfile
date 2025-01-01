@@ -17,7 +17,7 @@ RUN apt-get update -qq  && \
 # Add & configure user
 RUN useradd squeezeboxserver && \
 	usermod -u $PUID squeezeboxserver && \
-	usermod -g $PGID squeezeboxserver && \
+	groupmod -o -g "$PGID" squeezeboxserver && \
 	usermod -d /home squeezeboxserver && \
 	usermod -a -G audio squeezeboxserver
 
@@ -30,7 +30,7 @@ RUN mkdir -p /config /music /playlist /lms
 
 COPY . /lms
 COPY Slim-Utils-OS-Custom.pm /lms/Slim/Utils/OS/Custom.pm
-RUN chown -R squeezeboxserver:nogroup /config /playlist && chmod -R a+rX /lms
+RUN chown -R squeezeboxserver:squeezeboxserver /config /playlist && chmod -R a+rX /lms
 
 VOLUME /config /music /playlist
 

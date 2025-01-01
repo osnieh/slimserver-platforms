@@ -6,10 +6,10 @@ PUID=${PUID:-`id -u squeezeboxserver`}
 PGID=${PGID:-`id -g squeezeboxserver`}
 
 usermod -o -u "$PUID" squeezeboxserver
-groupmod -o -g "$PGID" nogroup
+groupmod -o -g "$PGID" squeezeboxserver
 
 #Add permissions
-chown -R squeezeboxserver:nogroup /config /playlist
+chown -R squeezeboxserver:squeezeboxserver /config /playlist
 
 if [[ -f /config/custom-init.sh ]]; then
 	echo "Running custom initialization script..."
