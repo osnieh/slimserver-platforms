@@ -65,6 +65,20 @@ services:
     restart: always
 ```
 
+By default, the server will use the container id as its name, you can set it to something else by providing a hostname.
+
+For run add:
+
+```
+  -h my-preferred-hostname
+```
+
+or for Docker compose add (at the same level as `container_name`):
+
+```
+    hostname: my-preferred-hostname
+```
+
 Alternatively you can specify the user and group id to use:
 For run add:
 ```
