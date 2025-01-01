@@ -67,25 +67,27 @@ services:
 
 By default, the server will use the container id as its name, you can set it to something else by providing a hostname.
 
-For run add:
+For `docker run` add:
 
 ```
   -h my-preferred-hostname
 ```
 
-or for Docker compose add (at the same level as `container_name`):
+or for `docker compose` add (at the same level as `container_name`):
 
 ```
     hostname: my-preferred-hostname
 ```
 
-Alternatively you can specify the user and group id to use:
-For run add:
+You can specify the user and group id to use:
+
+For `docker run` add:
 ```
   -e PUID=1000 \
   -e PGID=1000
 ```
-For compose add:
+
+For `docker compose` add:
 ```
 environment:
   - PUID=1000
