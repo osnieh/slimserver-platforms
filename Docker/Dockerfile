@@ -30,7 +30,7 @@ RUN mkdir -p /config /music /playlist /lms
 
 COPY . /lms
 COPY Slim-Utils-OS-Custom.pm /lms/Slim/Utils/OS/Custom.pm
-RUN chown -R squeezeboxserver:nogroup /config /playlist && chmod -R a+rX /lms
+RUN chown -R squeezeboxserver:squeezeboxserver /config /playlist && chmod -R a+rX /lms
 
 # create symlinks to some crypto libraries, or the bridge plugins will fail
 RUN if [ -f /usr/lib/aarch64-linux-gnu/libssl.so.3 ];      then ln -s /usr/lib/aarch64-linux-gnu/libssl.so.3 /usr/lib/aarch64-linux-gnu/libssl.so; fi
