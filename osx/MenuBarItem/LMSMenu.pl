@@ -60,33 +60,36 @@ sub getUpdate {
 		close(UPDATE);
 	}
 
-	return $update;
+	return $update || getPref('serverUpdateAvailable');
 }
 
 sub getVersionFile {
 	return catfile(main::getPref('cachedir'), 'updates', 'server.version')
 }
 
+my $prefs;
 sub getPref {
 	my $pref = shift;
 	my $ret;
 
-	if (-r PREFS_FILE) {
-		open(PREF, '<', PREFS_FILE) or return;
+	if (!$prefs) {
+		$prefs = {};
+		if (-r PREFS_FILE) {
+			open(PREF, '<', PREFS_FILE) or return;
 
-		while (<PREF>) {
-			if (/^$pref: ['"]?(.*)['"]?/) {
-				$ret = $1;
-				$ret =~ s/^['"]//;
-				$ret =~ s/['"\s]*$//s;
-				last;
+			while (<PREF>) {
+				if (/^([a-z]\S+):\s*(.*)/) {
+					$prefs->{$1} = $2;
+					$prefs->{$1} =~ s/^['"]//;
+					$prefs->{$1} =~ s/['"\s]*$//s;
+				}
 			}
-		}
 
-		close(PREF);
+			close(PREF);
+		}
 	}
 
-	return $ret;
+	return $prefs->{$pref};
 }
 
 sub getString {

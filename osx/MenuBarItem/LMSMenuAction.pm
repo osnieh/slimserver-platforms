@@ -32,7 +32,8 @@ sub handleAction {
 		runScript('create-launchitem.sh');
 	}
 	elsif ($item eq 'UPDATE_AVAILABLE') {
-		if (my $update = main::getUpdate()) {
+		my $update = main::getUpdate();
+		if ($update && $update !~ m/^http/) {
 			runScript('stop-server.sh');
 			unlink main::getVersionFile();
 			system("open \"$update\"");
@@ -40,6 +41,8 @@ sub handleAction {
 		}
 		# if we can't find the installer, fall back to showing instructions
 		else {
+			system("open $update") if $update;
+
 			my $title = main::getString('UPDATE_TITLE');
 			my $message = main::getString('INSTALL_UPDATE');
 			print("ALERT:$title|$message\n");
