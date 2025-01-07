@@ -79,9 +79,10 @@ sub getPref {
 
 			while (<PREF>) {
 				if (/^([a-z]\S+):\s*(.*)/) {
-					$prefs->{$1} = $2;
-					$prefs->{$1} =~ s/^['"]//;
-					$prefs->{$1} =~ s/['"\s]*$//s;
+					my $key = $1;
+					$prefs->{$key} = $2;
+					$prefs->{$key} =~ s/^['"]//;
+					$prefs->{$key} =~ s/['"\s]*$//s;
 				}
 			}
 
