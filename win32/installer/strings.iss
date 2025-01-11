@@ -832,3 +832,28 @@ nl.MigrateToWin64=Het lijkt erop dat u Windows 64-bits gebruikt. %n%nWij raden u
 MigrateToWin64InfoUrl=https://lyrion.org/reference/migrate-win32-win64/
 de.MigrateToWin64InfoUrl=https://lyrion.org/reference/migrate-win32-win64-de/
 
+ProblemStartingLMS=There was a problem starting Lyrion Music Server
+da.ProblemStartingLMS=Der opstod et problem med at starte Lyrion Music Server
+de.ProblemStartingLMS=Es gab ein Problem beim Starten von Lyrion Music Server
+fr.ProblemStartingLMS=Un problème est survenu lors du démarrage du Lyrion Music Server
+nl.ProblemStartingLMS=Er is een probleem opgetreden bij het starten van Lyrion Music Server
+
+TroubleShootServiceStart=Choose "More Information" to see further information about how to investigate the issue, or Close to exit.
+da.TroubleShootServiceStart=Vælg "Mere information" for at se yderligere information om, hvordan du undersøger problemet, eller Luk for at afslutte.
+de.TroubleShootServiceStart=Wählen Sie "Weitere Informationen", um weitere Informationen zur Untersuchung des Problems zu erhalten, oder Schließen, um zu beenden.
+fr.TroubleShootServiceStart=Choisissez "Plus d'informations" pour voir des informations supplémentaires sur la façon d'investiguer le problème, ou Fermer pour quitter.
+nl.TroubleShootServiceStart=Kies "Meer informatie" om verdere informatie te zien over hoe het probleem kan worden onderzocht, of Sluiten om af te sluiten.
+
+MoreInformation=&More Information
+da.MoreInformation=&Mere information
+de.MoreInformation=&Weitere Informationen
+fr.MoreInformation=&Plus d'informations
+nl.MoreInformation=&Meer informatie
+
+TroubleShootServiceStartURL=https://forums.slimdevices.com/forum/user-forums/logitech-media-server/1745977
+
+Close=&Close
+da.Close=&Luk
+de.Close=&Schließen
+fr.Close=&Fermer
+nl.Close=&Sluiten

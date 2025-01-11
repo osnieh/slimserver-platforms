@@ -3,8 +3,8 @@
 The [LMS Community](https://github.com/LMS-Community)'s Docker image for [Lyrion Music Server](https://github.com/LMS-Community/slimserver/) ([Dockerfile](https://github.com/LMS-Community/slimserver-platforms/tree/HEAD/Docker)). This formerly was known as `logitechmediaserver`.
 
 ## Tags
-* `latest`: the latest release version, currently v9.0.0
-* `stable`: the [bug fix branch](https://github.com/LMS-Community/slimserver/tree/public/9.0) based on the latest release, currently v9.0.1
+* `latest`: the latest release version, currently v9.0.1
+* `stable`: the [bug fix branch](https://github.com/LMS-Community/slimserver/tree/public/9.0) based on the latest release, currently v9.0.2
 * `dev`: the [development version](https://github.com/LMS-Community/slimserver/), with new features, and potentially less stability, currently v9.1.0
 
 ## Installation
