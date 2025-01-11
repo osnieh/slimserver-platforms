@@ -1,13 +1,13 @@
 // Service management routines on http://www.vincenzo.net/isxkb/index.php?title=Service
 type
 	SERVICE_STATUS = record
-    	dwServiceType				: cardinal;
-    	dwCurrentState				: cardinal;
-    	dwControlsAccepted			: cardinal;
-    	dwWin32ExitCode				: cardinal;
-    	dwServiceSpecificExitCode	: cardinal;
-    	dwCheckPoint				: cardinal;
-    	dwWaitHint					: cardinal;
+		dwServiceType				: cardinal;
+		dwCurrentState				: cardinal;
+		dwControlsAccepted			: cardinal;
+		dwWin32ExitCode				: cardinal;
+		dwServiceSpecificExitCode	: cardinal;
+		dwCheckPoint				: cardinal;
+		dwWaitHint					: cardinal;
 	end;
 	HANDLE = cardinal;
 
@@ -98,13 +98,61 @@ begin
 	Result := false;
 	if hSCM <> 0 then begin
 		hService := OpenService(hSCM,ServiceName,SERVICE_QUERY_STATUS);
-    	if hService <> 0 then begin
+		if hService <> 0 then begin
 			if QueryServiceStatus(hService,Status) then begin
 				Result :=(Status.dwCurrentState = SERVICE_RUNNING)
-        	end;
-            CloseServiceHandle(hService)
-		    end;
-        CloseServiceHandle(hSCM)
+			end;
+			CloseServiceHandle(hService)
+		end;
+		CloseServiceHandle(hSCM)
+	end
+end;
+
+function IsServiceStarting(ServiceName: AnsiString) : boolean;
+var
+	hSCM	: HANDLE;
+	hService: HANDLE;
+	Status	: SERVICE_STATUS;
+begin
+	hSCM := OpenServiceManager();
+	Result := false;
+	if hSCM <> 0 then begin
+		hService := OpenService(hSCM,ServiceName,SERVICE_QUERY_STATUS);
+		if hService <> 0 then begin
+			if QueryServiceStatus(hService,Status) then begin
+				Result :=(Status.dwCurrentState = SERVICE_START_PENDING)
+			end;
+			CloseServiceHandle(hService)
+		end;
+		CloseServiceHandle(hSCM)
+	end
+end;
+
+function GetServiceStatus(ServiceName: AnsiString) : AnsiString;
+var
+	hSCM	: HANDLE;
+	hService: HANDLE;
+	Status	: SERVICE_STATUS;
+begin
+	hSCM := OpenServiceManager();
+	Result := 'unknown';
+	if hSCM <> 0 then begin
+		hService := OpenService(hSCM,ServiceName,SERVICE_QUERY_STATUS);
+		if hService <> 0 then begin
+			if QueryServiceStatus(hService,Status) then begin
+				case Status.dwCurrentState of
+					SERVICE_STOPPED: Result := 'stopped';
+					SERVICE_START_PENDING: Result := 'starting';
+					SERVICE_STOP_PENDING: Result := 'stopping';
+					SERVICE_RUNNING: Result := 'running';
+					SERVICE_CONTINUE_PENDING: Result := 'continue pending';
+					SERVICE_PAUSE_PENDING: Result := 'pause pending';
+					SERVICE_PAUSED: Result := 'paused';
+				end
+		  	end;
+			CloseServiceHandle(hService)
+		end;
+		CloseServiceHandle(hSCM)
 	end
 end;
 
@@ -134,11 +182,11 @@ begin
 	Result := false;
 	if hSCM <> 0 then begin
 		hService := OpenService(hSCM,ServiceName,SERVICE_START);
-        if hService <> 0 then begin
-        	Result := StartNTService(hService,0,0);
-            CloseServiceHandle(hService)
+		if hService <> 0 then begin
+			Result := StartNTService(hService,0,0);
+			CloseServiceHandle(hService)
 		end;
-        CloseServiceHandle(hSCM)
+		CloseServiceHandle(hSCM)
 	end;
 end;
 
@@ -152,11 +200,11 @@ begin
 	Result := false;
 	if hSCM <> 0 then begin
 		hService := OpenService(hSCM,ServiceName,SERVICE_STOP);
-        if hService <> 0 then begin
-        	Result := ControlService(hService,SERVICE_CONTROL_STOP,Status);
-            CloseServiceHandle(hService)
+		if hService <> 0 then begin
+			Result := ControlService(hService,SERVICE_CONTROL_STOP,Status);
+			CloseServiceHandle(hService)
 		end;
-        CloseServiceHandle(hSCM)
+		CloseServiceHandle(hSCM)
 	end;
 end;
 

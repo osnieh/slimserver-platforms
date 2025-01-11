@@ -419,12 +419,14 @@ end;
 
 function WaitForService(Param: String): String;
 var
-	Wait, ErrorCode: Integer;
+	Wait, StoppedCounter, ErrorCode: Integer;
 begin
 	// wait up to x seconds for the services to be started
 	Wait := 30;
+	// but give up if we've been stopped x times
+	StoppedCounter := 3;
 
-	while (Wait > 0) do
+	while (Wait > 0) and (StoppedCounter > 0) do
 		begin
 			Log('Waiting for the server to be running...' + IntToStr(Wait));
 
@@ -441,14 +443,36 @@ begin
 				begin
 					Log('Service is running');
 					break;
+				end
+
+			else if (IsServiceStarting('{#ServiceName}')) then
+				begin
+					Log('Service is still starting...');
+				end
+
+			else if (GetServiceStatus('{#ServiceName}') = 'stopped') then
+				begin
+					Log('Service is stopped');
+					StoppedCounter := StoppedCounter - 1;
 				end;
 
 			Wait := Wait - 1;
 		end;
 
-	ShellExecAsOriginalUser('', 'http://localhost:' + GetHttpPort(''), '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
+	if (Wait = 0) or (StoppedCounter = 0) then
+		begin
+			Log('Service did not start in time');
+			if (SuppressibleTaskDialogMsgBox(CustomMessage('ProblemStartingLMS'), CustomMessage('TroubleShootServiceStart'),
+											mbInformation, MB_YESNO, [CustomMessage('MoreInformation'), CustomMessage('Close')], 0, IDYES) = IDYES) then
+				ShellExec('open', CustomMessage('TroubleShootServiceStartURL'),'','', SW_SHOWNORMAL, ewNoWait, ErrorCode);
 
-	Result := '';
+			Result := 'Service did not start in time';
+		end
+	else
+		begin
+			Result := '';
+			ShellExecAsOriginalUser('', 'http://localhost:' + GetHttpPort(''), '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
+		end;
 end;
 
 function GetCustomSetupExitCode: Integer;
