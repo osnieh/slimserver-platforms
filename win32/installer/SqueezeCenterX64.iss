@@ -408,7 +408,7 @@ begin
 
 				ProgressPage.setProgress(ProgressPage.ProgressBar.Position+10, ProgressPage.ProgressBar.Max);
 
-				Exec(AddBackslash(ExpandConstant('{sys}')) + 'sc.exe', 'start {#ServiceName}', '', SW_HIDE, ewWaitUntilIdle, ErrorCode);
+				StartService('{#ServiceName}');
 
 				ProgressPage.setProgress(ProgressPage.ProgressBar.Position+10, ProgressPage.ProgressBar.Max);
 			finally
