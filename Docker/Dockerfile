@@ -4,7 +4,7 @@ FROM debian:bookworm-slim
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL="C.UTF-8" LANG="en_US.UTF-8" LANGUAGE="en_US.UTF-8"
-ENV PUID=99 PGID=100
+ENV PUID=499 PGID=100
 ENV HTTP_PORT=9000
 
 # Install packages
