@@ -15,9 +15,8 @@ RUN apt-get update -qq  && \
 	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Add & configure user
-RUN useradd squeezeboxserver && \
-	usermod -u $PUID squeezeboxserver && \
-	groupmod -o -g "$PGID" squeezeboxserver && \
+RUN adduser --system --group -uid=$PUID squeezeboxserver && \
+	usermod -g $PGID squeezeboxserver && \
 	usermod -d /home squeezeboxserver && \
 	usermod -a -G audio squeezeboxserver
 
