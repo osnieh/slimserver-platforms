@@ -404,7 +404,7 @@ begin
 				if not FileExists(ExpandConstant('{tmp}\instsvc.pl')) then
 					Log('Failed to extract ' + ExpandConstant('{tmp}\instsvc.pl'))
 				else
-					Exec(ExpandConstant('{app}\{#LMSPerlBin}'), ExpandConstant('{tmp}\instsvc.pl "' + NewServerDir + 'slimserver.pl"'), '', SW_HIDE, ewWaitUntilIdle, ErrorCode);
+					Exec(ExpandConstant('{app}\{#LMSPerlBin}'), ExpandConstant('{tmp}\instsvc.pl "' + NewServerDir + 'slimserver.pl"'), '', SW_HIDE, ewWaitUntilTerminated, ErrorCode);
 
 				ProgressPage.setProgress(ProgressPage.ProgressBar.Position+10, ProgressPage.ProgressBar.Max);
 
