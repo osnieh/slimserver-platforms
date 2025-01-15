@@ -19,7 +19,6 @@ our $STRINGS = decode_json(do {
 my $lang = uc(substr(`/usr/bin/defaults read -g AppleLocale` || 'EN', 0, 2));
 
 use constant PRODUCT_NAME => 'Squeezebox';
-# use constant LOG_FOLDER => catdir($ENV{HOME}, 'Library', 'Logs', PRODUCT_NAME);
 use constant PREFS_FILE => catfile($ENV{HOME}, 'Library', 'Application Support', PRODUCT_NAME, 'server.prefs');
 
 sub getPort {
@@ -155,6 +154,9 @@ else {
 		print("----\n");
 		printMenuItem('UNINSTALL_PREFPANE');
 	}
+
+	print("----\n");
+	printMenuItem('ABOUT_SERVER');
 }
 
 1;

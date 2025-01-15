@@ -51,10 +51,47 @@ sub handleAction {
 	elsif ($item eq 'SERVICE_STARTING') {
 		# nothing to do here...
 	}
+	elsif ($item eq 'ABOUT_SERVER') {
+		my $message = getSystemInformation();
+		print "ALERT:Lyrion Music Server|$message\n";
+	}
 	else {
 		my $x = unidecode(join(' ', @ARGV));
 		print "ALERT:Selected Item...|$item $x\n";
 	}
+}
+
+sub getSystemInformation {
+	my $systemInfo = '';
+	my $versionFile = catfile(cwd(), '..', 'Resources', 'server', 'revision.txt');
+
+	if (-f $versionFile) {
+		local $/ = undef;
+		open(my $fh, $versionFile);
+		my $versionInfo = <$fh>;
+		close($fh);
+
+		my $version = main::getString('VERSION');
+		my ($revision, $buildtime) = split (/\n/, $versionInfo);
+
+		# can't use line break - use some tabs to force wrapping...
+		$systemInfo .= sprintf("Version: %-40s Revision: %-40s Buildtime: %s", $version, $revision, $buildtime);
+	}
+
+	require Config;
+	$systemInfo .= sprintf(" Perl: %-40s", $Config::Config{'version'} . ' - ' . $Config::Config{'archname'});
+
+	# fetching system information - should be in sync with Slim::Utils::OS::OSX
+	open(my $fh, '/usr/sbin/system_profiler SPSoftwareDataType SPHardwareDataType 2>&1 |') or return;
+	while (<$fh>) {
+		if (/System Version:|Chip:/i) {
+			chomp;
+			$systemInfo .= sprintf("%-40s", $_);
+		}
+	}
+	close($fh);
+
+	return $systemInfo;
 }
 
 sub runScript {
