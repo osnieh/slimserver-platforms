@@ -1,4 +1,14 @@
 {
+	"VERSION": {
+		"EN": "9.0.2"
+	},
+	"ABOUT_SERVER": {
+		"DA": "Om Lyrion Music Server",
+		"DE": "Über Lyrion Music Server",
+		"EN": "About Lyrion Music Server",
+		"FR": "À propos de Lyrion Music Server",
+		"NL": "Over Lyrion Music Server"
+	},
 	"OPEN_SETTINGS": {
 		"DA": "Åben indstillinger...",
 		"DE": "Einstellungen öffnen...",
