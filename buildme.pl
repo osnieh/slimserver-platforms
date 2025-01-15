@@ -354,13 +354,28 @@ sub doCommandOptions {
 ## We need to know the revision # of the code, so that we can put it into the source tree   ##
 ##############################################################################################
 sub getRevisionForRepo {
+	my $_getRevision = sub {
+		my $repo = shift;
+
+		my $rev;
+		if (-d "$sourceDir/$repo/.git") {
+			$rev = `git --git-dir=$sourceDir/$repo/.git log -n 1 --pretty=format:%ct`;
+			$rev =~ s/\s*$//s;
+		}
+
+		return $rev;
+	};
+
 	my $revision;
-	if (-d "$sourceDir/server/.git") {
-		$revision = `git --git-dir=$sourceDir/server/.git log -n 1 --pretty=format:%ct`;
-		$revision =~ s/\s*$//s;
+	my $serverRevision = $_getRevision->('server');
+	my $platformsRevision = $_getRevision->('platforms') if $serverRevision;
+
+	if ($serverRevision && $platformsRevision) {
+		$revision = $serverRevision > $platformsRevision ? $serverRevision : $platformsRevision;
 	} else {
 		$revision = 'UNKNOWN';
 	}
+
 	return $revision;
 }
 
