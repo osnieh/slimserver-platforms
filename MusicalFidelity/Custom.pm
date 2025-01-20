@@ -92,6 +92,9 @@ sub skipPlugins {
 # this system but let the players download directly
 sub directFirmwareDownload { 1 };
 
+# TODO - fix this. Should be possible.
+sub canRestartServer { 0 }
+
 sub restartServer {
 	exec("/etc/init.d/encoreserver", "restart");
 	return 1;
