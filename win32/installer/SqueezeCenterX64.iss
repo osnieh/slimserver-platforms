@@ -95,12 +95,7 @@ Type: filesandordirs; Name: {app}\server\Slim
 Type: filesandordirs; Name: {app}\server\HTML
 
 [UninstallDelete]
-Type: dirifempty; Name: {app}
-Type: dirifempty; Name: {app}\server
-Type: dirifempty; Name: {app}\server\IR
-Type: dirifempty; Name: {app}\server\Plugins
-Type: dirifempty; Name: {app}\server\HTML
-Type: dirifempty; Name: {app}\server\SQL
+Type: filesandordirs; Name: {app}
 
 [Run]
 Filename: {sys}\sc.exe; Parameters: "failure {#ServiceName} reset= 180 actions= restart/1000/restart/1000/restart/1000"; Flags: runhidden
