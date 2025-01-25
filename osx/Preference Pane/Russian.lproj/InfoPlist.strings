@@ -1,7 +1,0 @@
-﻿/* Localized versions of Info.plist keys */
-
-CFBundleName = "Lyrion Music Server";
-CFBundleShortVersionString = "9.1.0";
-CFBundleGetInfoString = "Lyrion Music Server, версия 9.1.0. © Logitech, 2002-2024, Lyrion Community, 2024";
-NSHumanReadableCopyright = "© Lyrion Community, 2024";
-NSPrefPaneIconLabel = "Lyrion\nMusic Server";
