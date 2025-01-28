@@ -53,7 +53,7 @@ usermod -g $PGID squeezeboxserver
 chown -R squeezeboxserver:squeezeboxserver /config /playlist
 
 if [[ -f /config/custom-init.sh ]]; then
-	if [[ -n $DISABLE_CUSTOM_INIT ]] ; then
+	if [[ -n $DISABLE_CUSTOM_INIT ]] && [ ${DISABLE_CUSTOM_INIT,,} == "true" ] ; then
 		echo "Custom script is disabled!"
 	else
 		echo "Running custom initialization script..."
