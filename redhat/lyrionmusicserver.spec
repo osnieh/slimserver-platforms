@@ -328,25 +328,6 @@ function parseSysconfigSqueezeboxserver {
 	fi
 }
 
-function setSelinux {
-
-        test -f /tmp/squeezerpmdebug && set -x
-
-	MYSQLPORT=9092
-	CACHEDIR=%{_var}/lib/%{shortname}/cache
-
-	# Add SELinux contexts
-	# We need this irrespective of whether it is a systemd or SYSV server.
-	if [ -x /usr/sbin/selinuxenabled ] ; then
-		if /usr/sbin/selinuxenabled ; then
-			[ -x /usr/sbin/semanage ] && /usr/sbin/semanage port -a -t mysqld_port_t -p tcp ${MYSQLPORT} > /dev/null 2>&1
-			[ -x /usr/sbin/semanage ] && /usr/sbin/semanage fcontext -a -t mysqld_db_t "${CACHEDIR}(/.*)?" > /dev/null 2>&1
-			[ -x /usr/sbin/semanage ] && /usr/sbin/semanage fcontext -a -t mysqld_var_run_t "${CACHEDIR}/%{shortname}-mysql.sock" > /dev/null 2>&1
-			/sbin/restorecon -R ${CACHEDIR} > /dev/null 2>&1
-		fi
-	fi
-}
-
 function setSYSV {
 
         test -f /tmp/squeezerpmdebug && set -x
@@ -494,11 +475,6 @@ if [ -e /etc/init.d/%{shortname} -a -x /usr/bin/systemctl ] ; then
 	migrate=true
 fi
 
-# If CentOS/RedHat/Fedora, handle selinux
-if [ -f /etc/redhat-release -o -n "$(echo \"$ID_LIKE $ID\" | /usr/bin/perl -ne '/(fedora|centos|rhel|redhat|rocky|alma)/i and print')" ] ; then
-        setSelinux
-fi
-
 # Check if we need to migrate a squeezeboxserver config to lyrion music server
 
 if [ -f /var/tmp/migrateSqueezeboxserverConfig ]; then
@@ -526,21 +502,6 @@ echo "Point your web browser to http://$HOSTNAME:$PORT/ to configure Lyrion Musi
 
 %preun
 test -f /tmp/squeezerpmdebug && set -x
-function unsetSelinux {
-
-	# Remove SELinux contexts
-	MYSQLPORT=9092
-	CACHEDIR=%{_var}/lib/%{shortname}/cache
-	if [ -x /usr/sbin/selinuxenabled ] ; then
-		if /usr/sbin/selinuxenabled; then
-			[ -x /usr/sbin/semanage ] && /usr/sbin/semanage port -d -t mysqld_port_t -p tcp ${MYSQLPORT}
-			[ -x /usr/sbin/semanage ] && /usr/sbin/semanage fcontext -d -t mysqld_db_t "${CACHEDIR}(/.*)?"
-			[ -x /usr/sbin/semanage ] && /usr/sbin/semanage fcontext -d -t mysqld_var_run_t "${CACHEDIR}/%{shortname}-mysql.sock"
-			/sbin/restorecon -R ${CACHEDIR}
-		fi
-	fi
-
-}
 
 function unsetSYSV {
 
@@ -581,13 +542,6 @@ if [ "$1" -eq "0" ] ; then
 	else
 
 		unsetSystemd
-
-	fi
-
-	# If CentOS/Fedora/RedHat, remove selinux settings
-	if [ -f /etc/redhat-release -o -n "$(echo \"$ID_LIKE $ID\" | /usr/bin/perl -ne '/(fedora|centos|rhel|redhat|rocky|alma)/i and print')" ] ; then
-
-		unsetSelinux
 
 	fi
 
@@ -651,6 +605,9 @@ fi
 
 
 %changelog
+* Sat Feb 01 2025 Johan Saaw
+- Removed selinux config support for mySQL/MariaDB databases as they are no
+  longer officially supported for LMS
 * Sat Aug 24 2024 Johan Saaw
 - Simplified the logic around detecting whether a migration from 
   squeezeboxserver config to lyrionmusicserver configuration is needed.
