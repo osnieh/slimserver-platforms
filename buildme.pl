@@ -394,7 +394,7 @@ sub showUsage {
 	print "\n";
 	print "--- Building a Docker image (with only ARM and x86_64 Linux binaries)\n";
 	print "    --build docker <required opts above>\n";
-	print "    --tag <tag>                  - additional tag for the Docker image\n";
+	print "    --tag <tag>                  - additional comma separated tag(s) for the Docker image\n";
 	print "\n";
 	print "--- Building an RPM package\n";
 	print "    --build rpm <required opts above>\n";
@@ -454,7 +454,12 @@ sub buildDockerImage {
 
 	my @tags = ("$version");
 	$tag ||= "rc" if $releaseType eq "release";
-	push @tags, $tag if $tag;
+	
+	# Split the tag into multiple tags if commas are present
+	if ($tag) {
+		my @split_tags = split(/,/, $tag);
+		push @tags, @split_tags;
+	}
 
 	my $tags = join(' ', map {
 		" --tag lmscommunity/$defaultDestName:$_";
