@@ -20,16 +20,12 @@ RUN adduser --system --group -uid=$PUID squeezeboxserver && \
 	usermod -d /home squeezeboxserver && \
 	usermod -a -G audio squeezeboxserver
 
-# Add startup script
-COPY start-container.sh /usr/bin/start-container
-RUN chmod +x /usr/bin/start-container
-
 # Volume and port setup
 RUN mkdir -p /config /music /playlist /lms
 
 COPY . /lms
 COPY Slim-Utils-OS-Custom.pm /lms/Slim/Utils/OS/Custom.pm
-RUN chown -R squeezeboxserver:squeezeboxserver /config /playlist && chmod -R a+rX /lms
+RUN chown -R squeezeboxserver:squeezeboxserver /config /playlist && chmod -R a+rX /lms && chmod +x /lms/start-container.sh
 
 VOLUME /config /music /playlist
 
@@ -38,4 +34,4 @@ EXPOSE 3483 3483/udp ${HTTP_PORT} 9090
 #Startup setup
 WORKDIR /config
 
-ENTRYPOINT ["start-container"]
+ENTRYPOINT ["/lms/start-container.sh"]
