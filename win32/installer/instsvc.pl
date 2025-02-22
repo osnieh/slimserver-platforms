@@ -22,7 +22,7 @@ my %ServiceConfig = (
 	user => $username,
 	password => $password,
 	parameters => "\"$script\" --daemon $arguments",
-	description => "Lyrion Music Server - streaming media server",
+	description => "Lyrion Music Server - streaming music server",
 );
 
 if ( Win32::Daemon::CreateService ( \%ServiceConfig ) ) {

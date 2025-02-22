@@ -67,6 +67,7 @@ sub getVersionFile {
 }
 
 my $prefs;
+# this simplistic prefs file parser can only handle scalars
 sub getPref {
 	my $pref = shift;
 	my $ret;
@@ -140,6 +141,12 @@ else {
 
 		printMenuItem('OPEN_GUI');
 		printMenuItem('OPEN_SETTINGS');
+		print("----\n");
+		printf("SUBMENU|%s|%s|%s\n",
+			getString('SETUP_RESCAN'),
+			getString('SETUP_WIPEDB'),
+			getString('SETUP_STANDARDRESCAN')
+		);
 		print("----\n");
 		printMenuItem('STOP_SERVICE');
 		printMenuItem($autoStartItem);

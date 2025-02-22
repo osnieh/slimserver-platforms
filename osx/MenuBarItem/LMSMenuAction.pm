@@ -18,6 +18,12 @@ sub handleAction {
 	elsif ($item eq 'OPEN_SETTINGS') {
 		system("open http://localhost:$httpPort/settings/index.html");
 	}
+	elsif ($item eq 'SETUP_WIPEDB') {
+		main::fireAndForgetServerRequest($httpPort, 'wipecache');
+	}
+	elsif ($item eq 'SETUP_STANDARDRESCAN') {
+		main::fireAndForgetServerRequest($httpPort, 'rescan');
+	}
 	elsif ($item eq 'START_SERVICE') {
 		# we're going to re-use a shell script which will be used elsewhere, too
 		runScript('start-server.sh');

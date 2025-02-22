@@ -18,9 +18,9 @@
 	},
 	"STOP_SERVICE": {
 		"DA": "Stop tjeneste",
-		"DE": "Dienst stoppen",
-		"EN": "Stop Service",
-		"FR": "Arrêter le service",
+		"DE": "Server stoppen",
+		"EN": "Stop Server",
+		"FR": "Arrêter le serveur",
 		"NL": "Stop service"
 	},
 	"OPEN_GUI": {
@@ -32,31 +32,52 @@
 	},
 	"START_SERVICE": {
 		"DA": "Start tjeneste",
-		"DE": "Dienst starten",
-		"EN": "Start Service",
-		"FR": "Démarrer le service",
+		"DE": "Server starten",
+		"EN": "Start Server",
+		"FR": "Démarrer le serveur",
 		"NL": "Service starten"
 	},
 	"SERVICE_STARTING": {
 		"DA": "Tjeneste starter...",
-		"DE": "Dienst wird gestartet...",
-		"EN": "Service is starting up...",
-		"FR": "Le service démarre...",
+		"DE": "Server wird gestartet...",
+		"EN": "Server is starting up...",
+		"FR": "Le serveur démarre...",
 		"NL": "De service begint..."
 	},
 	"AUTOSTART_ON": {
 		"DA": "✓ Kør tjeneste automatisk",
-		"DE": "✓ Dienst automatisch ausführen",
-		"EN": "✓ Run Service automatically",
-		"FR": "✓ Exécuter le service automatiquement",
+		"DE": "✓ Server automatisch ausführen",
+		"EN": "✓ Run Server automatically",
+		"FR": "✓ Exécuter le serveur automatiquement",
 		"NL": "✓ Service automatisch uitvoeren"
 	},
 	"AUTOSTART_OFF": {
 		"DA": "Kør tjeneste automatisk",
-		"DE": "Dienst automatisch ausführen",
-		"EN": "Run Service automatically",
-		"FR": "Exécuter le service automatiquement",
+		"DE": "Server automatisch ausführen",
+		"EN": "Run Server automatically",
+		"FR": "Exécuter le serveur automatiquement",
 		"NL": "Service automatisch uitvoeren"
+	},
+	"SETUP_RESCAN": {
+		"DA": "Gennemsøg mediebibliotek igen",
+		"DE": "Medienbibliothek erneut durchsuchen",
+		"EN": "Rescan Media Library",
+		"FR": "Analyser la bibliothèque multimédia",
+		"NL": "Mediabibliotheek opnieuw scannen"
+	},
+	"SETUP_WIPEDB": {
+		"DA": "Ryd biblioteket, og gennemsøg alle mapper igen",
+		"DE": "Datenbank löschen und alles neu durchsuchen",
+		"EN": "Clear library and rescan everything",
+		"FR": "Effacer la bibliothèque et tout analyser à nouveau",
+		"NL": "Mediabibliotheek wissen en alles opnieuw scannen"
+	},
+	"SETUP_STANDARDRESCAN": {
+		"DA": "Søg efter nye og ændrede mediefiler",
+		"DE": "Nach neuen und veränderten Mediendateien suchen",
+		"EN": "Look for new and changed media files",
+		"FR": "Rechercher les fichiers multimédias ajoutés ou modifiés",
+		"NL": "Nieuwe en gewijzigde mediabestanden zoeken"
 	},
 	"UPDATE_AVAILABLE": {
 		"DA": "✨ En opdateret version er tilgængelig",
@@ -74,9 +95,9 @@
 	},
 	"INSTALL_UPDATE": {
 		"DA": "For at opdatere din Lyrion Music Server, stop tjenesten, afslut punktet i menubjælken, og flyt \"Lyrion Music Server\" applikationen til dit \"Applications\" katalog.",
-		"DE": "Um die aktualisierte Version von Lyrion Music Server zu installieren, stoppen Sie den Dienst, beenden Sie das Element in der Menüzeile, und verschieben Sie die \"Lyrion Music Server\" Anwendung in den \"Programme\" Ordner.",
-		"EN": "In order to update your Lyrion Music Server, stop the service, quit the menu bar item, and move the \"Lyrion Music Server\" application to your \"Applications\" folder.",
-		"FR": "Pour mettre à jour votre Lyrion Music Server, arrêtez le service, quittez l'élément de la barre de menu et déplacez l'application « Lyrion Music Server » dans votre dossier « Applications ».",
+		"DE": "Um die aktualisierte Version von Lyrion Music Server zu installieren, stoppen Sie den Server, beenden Sie das Element in der Menüzeile, und verschieben Sie die \"Lyrion Music Server\" Anwendung in den \"Programme\" Ordner.",
+		"EN": "In order to update your Lyrion Music Server, stop the server, quit the menu bar item, and move the \"Lyrion Music Server\" application to your \"Applications\" folder.",
+		"FR": "Pour mettre à jour votre Lyrion Music Server, arrêtez le serveur, quittez l'élément de la barre de menu et déplacez l'application « Lyrion Music Server » dans votre dossier « Applications ».",
 		"NL": "Om je Lyrion Music Server bij te werken, stop je de service, sluit je het menu af en verplaats je het programma \"Lyrion Music Server\" naar je map \"Toepassingen\"."
 	},
 	"UNINSTALL_PREFPANE": {
