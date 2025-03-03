@@ -28,7 +28,7 @@ my $windowsPerlDir = "C:\\perl";
 my $windowsPerlPath = "$windowsPerlDir\\bin\\perl.exe";
 
 ## Directories to exclude when building certain packages...
-my $dirsToExcludeForLinuxTarball = "i386-freebsd-64int MSWin32-x86-multi-thread MSWin32-x64-multi-thread darwin darwin-x86_64 PreventStandby i86pc-solaris-thread-multi-64int";
+my $dirsToExcludeForLinuxTarball = "i386-freebsd-64int MSWin32-x86-multi-thread MSWin32-x64-multi-thread darwin darwin-x86_64 PreventStandby i86pc-solaris-thread-multi-64int powerpc-linux sparc-linux";
 my $dirsToExcludeForLinuxPackage = "$dirsToExcludeForLinuxTarball 5.10 5.12 5.14 5.16 5.18";
 my $dirsToExcludeForFreeBSDTarball = "MSWin32-x86-multi-thread MSWin32-x64-multi-thread PreventStandby i386-linux x86_64-linux i86pc-solaris-thread-multi-64int darwin darwin-x86_64 sparc-linux arm-linux armhf-linux powerpc-linux aarch64-linux icudt46b.dat";
 my $dirsToExcludeForARMTarball = "MSWin32-x86-multi-thread MSWin32-x64-multi-thread PreventStandby i386-linux x86_64-linux i86pc-solaris-thread-multi-64int darwin darwin-x86_64 sparc-linux i386-freebsd-64int powerpc-linux icudt46b.dat icudt58b.dat";
@@ -454,7 +454,7 @@ sub buildDockerImage {
 
 	my @tags = ("$version");
 	$tag ||= "rc" if $releaseType eq "release";
-	
+
 	# Split the tag into multiple tags if commas are present
 	if ($tag) {
 		my @split_tags = split(/,/, $tag);
