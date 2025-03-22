@@ -39,6 +39,7 @@ my $dirsToExcludeFori386Deb = "5.10 5.12 5.14 5.16 5.18 MSWin32-x86-multi-thread
 my $dirsToExcludeForLinuxNoCpanTarball = "i386-freebsd-64int MSWin32-x86-multi-thread MSWin32-x64-multi-thread i86pc-solaris-thread-multi-64int darwin darwin-x86_64 i386-linux sparc-linux x86_64-linux arm-linux armhf-linux powerpc-linux aarch64-linux /arch/ PreventStandby";
 my $dirsToExcludeForLinuxNoCpanLightTarball = $dirsToExcludeForLinuxNoCpanTarball . " /Bin/ /HTML/! /Firmware/ /MySQL/ Graphics/CODE2000* Plugin/DateTime DigitalInput iTunes LineIn LineOut MusicMagic RSSNews Rescan SavePlaylist SlimTris Snow Plugin/TT/ Visualizer xPL";
 my $dirsToIncludeForLinuxNoCpanLightTarball = "EN.*html/images CPAN/HTML";
+my $dirsToExcludeForPCP = "$dirsToExcludeForLinuxNoCpanTarball CPAN/Font";
 my $dirsToExcludeForMacOS = "5.10 5.12 5.14 5.16 5.20 5.22 5.24 5.26 5.28 5.30 5.32 5.36 5.38 5.40 i386-freebsd-64int i386-linux x86_64-linux x86_64-linux-gnu-thread-multi MSWin32 i86pc-solaris-thread-multi-64int arm-linux armhf-linux powerpc-linux sparc-linux aarch64-linux";
 my $dirsToExcludeForWin64 = "5.10 5.12 5.14 5.16 5.18 5.20 5.22 5.24 5.26 5.28 5.30 5.34 5.36 5.38 5.40 i386-freebsd-64int i386-linux x86_64-linux x86_64-linux-gnu-thread-multi i86pc-solaris-thread-multi-64int darwin darwin-x86_64 sparc-linux arm-linux armhf-linux powerpc-linux aarch64-linux OS/Debian.pm OS/Linux.pm OS/Unix.pm OS/OSX.pm OS/RedHat.pm OS/Suse.pm OS/SlimService.pm OS/Synology.pm OS/SqueezeOS.pm icudt46b.dat icudt46l.dat icudt58b.dat icudt58l.dat";
 
@@ -74,6 +75,8 @@ sub main {
 
 	## Ok, begin the IF statement... what are we building?
 	doCommandOptions();
+
+	createMD5Checksums();
 }
 
 ##############################################################################################
@@ -111,7 +114,7 @@ sub checkCommandOptions {
 		exit(0);
 	}
 
-	if ($build =~ /^tarball|docker|debian|rpm|macos|win64$/) {
+	if ($build =~ /^tarball|docker|debian|rpm|macos|win64|pcp$/) {
 		## releaseType is an option, but if its not there, we need
 		## to default it to 'nightly'
 		if (!$releaseType) {
@@ -306,12 +309,16 @@ sub doCommandOptions {
 		buildDockerImage();
 
 	} elsif ($build eq "debian") {
-		## Build a Debian Package
 		buildDebian();
 
 	} elsif ($build eq "rpm") {
-		## Run the RPM
 		buildRPM();
+
+	} elsif ($build eq "pcp") {
+		if ( $releaseType && $releaseType eq "release" ) {
+			$destName =~ s/-$revision//;
+		}
+		buildPCP();
 
 	} elsif ($build eq "macos") {
 		## Build the Mac OSX menu bar item
@@ -329,6 +336,26 @@ sub doCommandOptions {
 		# buildZIPArchive($dirsToExcludeForWin64, "$destDir/$destName-win64");
 		buildWin64("$destName-win64");
 
+	}
+}
+
+##############################################################################################
+## Create MD5 checksum files for each build                                                 ##
+##############################################################################################
+sub createMD5Checksums {
+	opendir(my $dh, $destDir) or do {
+		warn "Cannot open directory $destDir: $!";
+		return;
+	};
+
+	my @files = grep { /lyrion.*server/i && -f "$destDir/$_" } readdir($dh);
+	closedir($dh);
+
+	# macOS doesn't come with md5sum - use md5 instead
+	if ($^O eq 'darwin') {
+		system("cd $destDir; md5 -r $_ > $_.md5") for @files;
+	} else {
+		system("cd $destDir; md5sum $_ > $_.md5") for @files;
 	}
 }
 
@@ -406,6 +433,9 @@ sub showUsage {
 	print "    --x86_64 (optional)          - Build a package with only x86_64 Linux binaries\n";
 	print "    --i386 (optional)            - Build a package with only i386 Linux binaries\n";
 	print "\n";
+	print "--- Building a TCZ package for piCorePlayer\n";
+	print "    --build pcp <required opts above>\n";
+	print "\n";
 	print "--- Building a macOS menu bar item\n";
 	print "    --build macos <required opts above>\n";
 	print "    --destName <filename>        - The name of the OSX Package Name, do not \n";
@@ -468,6 +498,33 @@ sub buildDockerImage {
 	system("cd $workDir; docker buildx build --push --platform linux/arm/v7,linux/amd64,linux/arm64/v8 $tags .");
 
 	die('Docker build failed') if $? & 127;
+}
+
+##############################################################################################
+## Build the TCZ package for piCorePlayer                                                   ##
+##############################################################################################
+sub buildPCP {
+	removeExclusions($dirsToExcludeForPCP);
+
+	mkpath("$buildDir/build/usr/local/bin");
+	mkpath("$buildDir/build/usr/local/etc/init.d");
+
+	system("mv $buildDir/server $buildDir/build/usr/local/slimserver");
+	copy("$buildDir/platforms/pcp/Custom.pm", "$buildDir/build/usr/local/slimserver/Slim/Utils/OS");
+	copy("$buildDir/platforms/pcp/picore-update.html", "$buildDir/build/usr/local/slimserver/HTML/EN/html/docs");
+	copy("$buildDir/platforms/pcp/custom-strings.txt", "$buildDir/build/usr/local/slimserver");
+	copy("$buildDir/platforms/pcp/slimserver", "$buildDir/build/usr/local/etc/init.d");
+	copy("$buildDir/platforms/pcp/lms-update.sh", "$buildDir/build/usr/local/bin");
+
+	system("find $buildDir/build -type f -perm 644");
+	system("find $buildDir/build -type d -perm 755");
+	system("find $buildDir/build/usr/local/slimserver -name '*.pl' -perm 755");
+	chmod 0755, "$buildDir/build/usr/local/etc/init.d/slimserver";
+	chmod 0755, "$buildDir/build/usr/local/bin/lms-update.sh";
+	system("find $buildDir/build/usr/local/slimserver/Bin -type f -perm 755");
+
+	print "INFO: Building TCZ package with source from $buildDir/build...\n";
+	system("mksquashfs $buildDir/build $destDir/$destName.tcz -noappend -force-uid 0 -force-gid 50 -b 16384");
 }
 
 ##############################################################################################
