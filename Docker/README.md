@@ -134,6 +134,21 @@ docker run -it \
       -e EXTRA_ARGS=--advertiseaddr=192.168.0.100 \
       lmscommunity/lyrionmusicserver
 ```
+### Using the Local Player Plugin inside your Container
+NOTE: This requires audio hardware installed on the host machine which means this is unlikely to work on most NAS solutions like Synology or QNAP.
+
+To use the Local Player plugin you need to specify an audio device to use:
+
+For `docker run` add:
+```
+  --device /dev/snd \
+```
+
+For `docker compose` add:
+```
+    devices: 
+      - /dev/snd:/dev/snd
+```
 
 ### Running a script before the launch of Lyrion Music Server (v8.2.0+)
 You can put a script called `custom-init.sh` in the configuration folder. If that script exists, it will be executed before Lyrion Music Server is launched. This would allow you to add additional software packages to the container. Eg. the following two lines put into `custom-init.sh` will install `ffmpeg` for use with some plugins:

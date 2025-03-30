@@ -40,8 +40,8 @@ my $dirsToExcludeForLinuxNoCpanTarball = "i386-freebsd-64int MSWin32-x86-multi-t
 my $dirsToExcludeForLinuxNoCpanLightTarball = $dirsToExcludeForLinuxNoCpanTarball . " /Bin/ /HTML/! /Firmware/ /MySQL/ Graphics/CODE2000* Plugin/DateTime DigitalInput iTunes LineIn LineOut MusicMagic RSSNews Rescan SavePlaylist SlimTris Snow Plugin/TT/ Visualizer xPL";
 my $dirsToIncludeForLinuxNoCpanLightTarball = "EN.*html/images CPAN/HTML";
 my $dirsToExcludeForPCP = "$dirsToExcludeForLinuxNoCpanTarball CPAN/Font";
-my $dirsToExcludeForMacOS = "5.10 5.12 5.14 5.16 5.20 5.22 5.24 5.26 5.28 5.30 5.32 5.36 5.38 5.40 i386-freebsd-64int i386-linux x86_64-linux x86_64-linux-gnu-thread-multi MSWin32 i86pc-solaris-thread-multi-64int arm-linux armhf-linux powerpc-linux sparc-linux aarch64-linux";
-my $dirsToExcludeForWin64 = "5.10 5.12 5.14 5.16 5.18 5.20 5.22 5.24 5.26 5.28 5.30 5.34 5.36 5.38 5.40 i386-freebsd-64int i386-linux x86_64-linux x86_64-linux-gnu-thread-multi i86pc-solaris-thread-multi-64int darwin darwin-x86_64 sparc-linux arm-linux armhf-linux powerpc-linux aarch64-linux OS/Debian.pm OS/Linux.pm OS/Unix.pm OS/OSX.pm OS/RedHat.pm OS/Suse.pm OS/SlimService.pm OS/Synology.pm OS/SqueezeOS.pm icudt46b.dat icudt46l.dat icudt58b.dat icudt58l.dat";
+my $dirsToExcludeForMacOS = "5.10 5.12 5.14 5.16 5.20 5.22 5.24 5.26 5.28 5.30 5.32 5.36 5.38 5.40 i386-freebsd-64int i386-linux x86_64-linux x86_64-linux-gnu-thread-multi MSWin32 i86pc-solaris-thread-multi-64int arm-linux armhf-linux powerpc-linux sparc-linux aarch64-linux OS/Debian.pm OS/Linux.pm OS/pCP.pm OS/RedHat.pm OS/Suse.pm OS/SlimService.pm OS/Synology.pm OS/SqueezeOS.pm OS/Unix.pm OS/Win32.pm OS/Win64.pm";
+my $dirsToExcludeForWin64 = "5.10 5.12 5.14 5.16 5.18 5.20 5.22 5.24 5.26 5.28 5.30 5.34 5.36 5.38 5.40 i386-freebsd-64int i386-linux x86_64-linux x86_64-linux-gnu-thread-multi i86pc-solaris-thread-multi-64int darwin darwin-x86_64 sparc-linux arm-linux armhf-linux powerpc-linux aarch64-linux OS/Debian.pm OS/Linux.pm OS/OSX.pm OS/pCP.pm OS/RedHat.pm OS/Suse.pm OS/SlimService.pm OS/Synology.pm OS/SqueezeOS.pm OS/Unix.pm icudt46b.dat icudt46l.dat icudt58b.dat icudt58l.dat";
 
 # for Docker we provide x86_64 and armhf for Perl 5.36 only
 my $dirsToExcludeForDocker = "$dirsToExcludeForLinuxPackage 5.20 5.22 5.24 5.26 5.28 5.30 5.32 5.34 5.38 5.40 i386-linux i86pc-solaris-thread-multi-64int sparc-linux powerpc-linux icudt46b.dat icudt58b.dat";
@@ -510,9 +510,6 @@ sub buildPCP {
 	mkpath("$buildDir/build/usr/local/etc/init.d");
 
 	system("mv $buildDir/server $buildDir/build/usr/local/slimserver");
-	copy("$buildDir/platforms/pcp/Custom.pm", "$buildDir/build/usr/local/slimserver/Slim/Utils/OS");
-	copy("$buildDir/platforms/pcp/picore-update.html", "$buildDir/build/usr/local/slimserver/HTML/EN/html/docs");
-	copy("$buildDir/platforms/pcp/custom-strings.txt", "$buildDir/build/usr/local/slimserver");
 	copy("$buildDir/platforms/pcp/slimserver", "$buildDir/build/usr/local/etc/init.d");
 	copy("$buildDir/platforms/pcp/lms-update.sh", "$buildDir/build/usr/local/bin");
 
