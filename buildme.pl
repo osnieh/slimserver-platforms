@@ -50,7 +50,7 @@ my $dirsToExcludeForDocker = "$dirsToExcludeForLinuxPackage 5.20 5.22 5.24 5.26 
 my $dirsToExcludeForEncore = "$dirsToExcludeForLinuxPackage 5.20 5.24 5.26 5.28 5.30 5.32 5.34 5.36 5.38 5.40 i386-linux arm-linux armhf-linux aarch64-linux i86pc-solaris-thread-multi-64int sparc-linux powerpc-linux icudt46l.dat icudt46b.dat";
 
 ## Initialize some variables we'll use later
-my ($build, $destName, $destDir, $buildDir, $sourceDir, $version, $noCPAN, $fakeRoot, $light, $freebsd, $arm, $encore, $ppc, $x86_64, $i386, $releaseType, $release, $tag);
+my ($build, $destName, $destDir, $buildDir, $sourceDir, $version, $noCPAN, $fakeRoot, $light, $freebsd, $arm, $encore, $ppc, $x86_64, $i386, $releaseType, $release, $tag, $registry);
 
 
 ##############################################################################################
@@ -101,6 +101,7 @@ sub checkCommandOptions {
 			'light'         => \$light,
 			'releaseType=s' => \$releaseType,
 			'tag=s'         => \$tag,
+			'registry=s'    => \$registry,
 			'fakeRoot'      => \$fakeRoot);
 
 	if ( !$build ) {
@@ -343,6 +344,8 @@ sub doCommandOptions {
 ## Create MD5 checksum files for each build                                                 ##
 ##############################################################################################
 sub createMD5Checksums {
+	return if $build eq 'docker';
+
 	opendir(my $dh, $destDir) or do {
 		warn "Cannot open directory $destDir: $!";
 		return;
@@ -422,6 +425,7 @@ sub showUsage {
 	print "--- Building a Docker image (with only ARM and x86_64 Linux binaries)\n";
 	print "    --build docker <required opts above>\n";
 	print "    --tag <tag>                  - additional comma separated tag(s) for the Docker image\n";
+	print "    --registry <registry>        - registry to push the image to (in addition to Dockerhub\n";
 	print "\n";
 	print "--- Building an RPM package\n";
 	print "    --build rpm <required opts above>\n";
@@ -491,13 +495,23 @@ sub buildDockerImage {
 		push @tags, @split_tags;
 	}
 
-	my $tags = join(' ', map {
-		" --tag lmscommunity/$defaultDestName:$_";
-	} @tags);
+	$registry = lc($registry) if $registry;
 
-	system("cd $workDir; docker buildx build --push --platform linux/arm/v7,linux/amd64,linux/arm64/v8 $tags .");
+	my $tags;
+	foreach my $r ('lmscommunity', $registry) {
+		next unless $r;
 
-	die('Docker build failed') if $? & 127;
+		my $tag = ' --tag ' . lc($r) . '/' . $defaultDestName;
+
+		foreach my $t (@tags) {
+			$tags .= "$tag:$t";
+		}
+	}
+
+	print "INFO: Building Docker image with tags:$tags\n";
+
+	system("cd $workDir; docker buildx build --push --platform linux/arm/v7,linux/amd64,linux/arm64/v8 $tags .") == 0
+		or die("Docker build failed: $!");
 }
 
 ##############################################################################################

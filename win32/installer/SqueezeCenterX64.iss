@@ -14,7 +14,8 @@
 #define LMSPerl    "Perl"
 #define LMSPerlBin "Perl\perl\bin\perl.exe"
 #define ServiceName "squeezesvc"
-#define StrawBerryPerlURL "https://strawberryperl.com/download/5.32.1.1/strawberry-perl-5.32.1.1-64bit-portable.zip"
+; #define StrawBerryPerlURL "https://strawberryperl.com/download/5.32.1.1/strawberry-perl-5.32.1.1-64bit-portable.zip"
+#define StrawBerryPerlURL "https://downloads.lms-community.org/StrawberryPerl/strawberry-perl-5.32.1.1-64bit-portable.zip"
 #define StrawBerryPerlZIP "strawberry.zip"
 
 [Languages]
