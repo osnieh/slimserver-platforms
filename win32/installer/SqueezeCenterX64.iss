@@ -13,6 +13,8 @@
 #define W32Uninstaller "SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Lyrion Music Server_is1"
 #define LMSPerl    "Perl"
 #define LMSPerlBin "Perl\perl\bin\perl.exe"
+#define LMSPerlVendorLib "Perl\perl\vendor\lib"
+#define LMSCPANarchMSWin64 "server\CPAN\arch\5.32\MSWin32-x64-multi-thread"
 #define ServiceName "squeezesvc"
 ; #define StrawBerryPerlURL "https://strawberryperl.com/download/5.32.1.1/strawberry-perl-5.32.1.1-64bit-portable.zip"
 #define StrawBerryPerlURL "https://downloads.lms-community.org/StrawberryPerl/strawberry-perl-5.32.1.1-64bit-portable.zip"
@@ -62,6 +64,7 @@ DirExistsWarning=no
 ArchitecturesAllowed=x64compatible
 SolidCompression=yes
 
+; Files is executed after PrepareToInstall - allowing to override some of the Perl files if needed
 [Files]
 ; a dll to verify if a process is still running
 ; http://www.vincenzo.net/isxkb/index.php?title=PSVince
@@ -70,6 +73,7 @@ Source: instsvc.pl; Flags: dontcopy
 Source: SqueezeCenter.ico; DestDir: "{app}"
 Source: 7z.exe; Flags: dontcopy
 Source: 7z.dll; Flags: dontcopy
+Source: {#LMSCPANarchMSWin64}\Mozilla\*.*; DestDir: {app}\{#LMSPerlVendorLib}\Mozilla; Flags: recursesubdirs ignoreversion
 
 ; Next line takes everything from the source '\server' directory and copies it into the setup
 ; it's output into the same location from the users choice.
