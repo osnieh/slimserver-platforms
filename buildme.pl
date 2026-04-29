@@ -840,8 +840,8 @@ sub buildMacOS {
 
 			if ($hasCerts) {
 				print "INFO: Notarizing $pkgName.dmg...";
-				system("xcrun notarytool submit '$destDir/$pkgName.dmg' --progress --apple-id=$ENV{APPLE_ID} --password=$ENV{NOTARIZATION_PW} --team-id=$ENV{TEAM_ID} --wait");
-				system("xcrun stapler staple '$destDir/$pkgName.dmg'");
+				system("xcrun notarytool submit '$destDir/$pkgName.dmg' --progress --apple-id=$ENV{APPLE_ID} --password=$ENV{NOTARIZATION_PW} --team-id=$ENV{TEAM_ID} --wait") == 0 or die "notarytool failed";
+				system("xcrun stapler staple '$destDir/$pkgName.dmg'") == 0 or die "stapler failed";
 			}
 		}
 		else {
