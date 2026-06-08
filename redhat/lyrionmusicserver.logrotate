@@ -1,9 +1,14 @@
+# We rely on some of the settings made
+# in the global logrotate.conf. That way
+# the set-up will be in line with the 
+# different distribution's defaults.
 /var/log/lyrionmusicserver/server.log {
     missingok
     notifempty
     sharedscripts
     postrotate
-        /bin/kill -USR1 `pgrep lyrionmusicserver >/dev/null 2>&1` >/dev/null 2>&1 || true
+        # send USR1 to main lyrionmusicserver process to reset logging
+        /usr/bin/systemctl --kill-whom=main --signal=USR1 kill lyrionmusicserver.service
     endscript
 }
 

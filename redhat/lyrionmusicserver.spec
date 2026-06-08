@@ -84,15 +84,15 @@ License:	GPL and proprietary
 URL:		https://www.lyrion.org
 Source0:	%{src_basename}.tgz
 Source1:	%{shortname}.config
-Source2:	%{shortname}.init
 Source3:	%{shortname}.logrotate
 Source4:	%{shortname}.service
 Source5:	README.systemd
 Source6:        README.rebranding
+Source7:        %{shortname}.preset
 BuildRoot:	%{_tmppath}/%{name}-%{version}-buildroot
 Vendor:		Lyrion Community
 
-
+BuildRequires:   systemd-rpm-macros
 Requires(pre):   /usr/bin/getent
 Requires(pre):   /usr/bin/touch
 Requires(pre):   /usr/sbin/groupadd
@@ -103,8 +103,41 @@ Requires(post):  /usr/bin/ln
 Requires(post):  /usr/bin/mv
 Requires(post):  /usr/bin/rm
 Requires(post):  /usr/sbin/usermod
-Requires:        perl >= 5.10.0
-Recommends:      perl(IO::Socket::SSL)
+Requires(post):  /usr/bin/systemctl
+
+# The following is needed to ensure that we get the right version of Perl.
+# Check both for minumu and maximum versions.
+# The perl(:VERSION) is for Red Hat flavours, and the perl >= is for SUSE flavours.
+Requires: ((perl >= 5.22 or perl(:VERSION) >= 5.22) with ( perl < 5.43 or perl(:VERSION) < 5.43))
+
+# The following Requires are a list of the Perl modules we know that we need.
+# They are are required by Lyrion Music Server, but not shipped in the RPM 
+# package. 
+Requires:      perl(IO::Socket::SSL)
+Requires:      perl(strict)
+Requires:      perl(Config)
+Requires:      perl(Socket)
+Requires:      perl(FindBin)
+Requires:      perl(lib)
+Requires:      perl(Getopt::Long)
+Requires:      perl(File::Path)
+Requires:      perl(File::Copy)
+Requires:      perl(File::Find)
+Requires:      perl(POSIX)
+Requires:      perl(Time::HiRes)
+Requires:      perl(locale)
+Requires:      perl(DynaLoader)
+Requires:      perl(Sys::Hostname)
+Requires:      perl(Devel::Peek)
+Requires:      perl(I18N::LangTags)
+Requires:      perl(subs)
+Requires:      perl(Compress::Raw::Zlib)
+Requires:      perl(Digest::SHA)
+
+# For Red Hat based distributions, Recommend perl so that the Perl core is
+# pulled in for use by LMS plugins. We use Recommends instead of Requires so
+# that users can remove unneeded packages if they want too.
+Recommends:    perl
 
 Provides:	%{src_basename} = %{version}-%{release}
 Obsoletes:	logitechmediaserver
@@ -120,8 +153,7 @@ BuildArch:	noarch
 Lyrion Music Server powers the Squeezebox, Transporter and SLIMP3 network music
 players and is the best software to stream your music to any software MP3
 player. It supports MP3, AAC, WMA, FLAC, Ogg Vorbis, WAV and more!
-As of version 7.7 it also supports UPnP clients, serving pictures and movies too!
-
+As of version 7.7 it also supports UPnP clients.
 
 %prep
 %setup -q -n %{src_basename}
@@ -145,7 +177,8 @@ rm -rf CPAN/arch/*/MSWin32-x86-multi-thread
 rm -rf $RPM_BUILD_ROOT
 
 # FHS compatible directory structure
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/init.d
+mkdir -p $RPM_BUILD_ROOT%{_unitdir}
+mkdir -p $RPM_BUILD_ROOT%{_presetdir}
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/%{shortname}
 mkdir -p $RPM_BUILD_ROOT%{_usr}/lib/perl5/vendor_perl
@@ -181,13 +214,13 @@ cp -p gdresized.pl $RPM_BUILD_ROOT%{_usr}/libexec/%{shortname}-resized
 ln -s %{_var}/lib/%{shortname}/Plugins \
 	$RPM_BUILD_ROOT%{_datadir}/%{shortname}/Plugins
 
-# Install init, configuration and log files
+# Install service, configuration and log files
 install -Dp -m755 %SOURCE1 $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/%{shortname}
-install -Dp -m755 %SOURCE2 $RPM_BUILD_ROOT%{_datadir}/%{shortname}/%{shortname}.SYSV
 install -Dp -m644 %SOURCE3 $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/%{shortname}
-install -Dp -m644 %SOURCE4 $RPM_BUILD_ROOT%{_datadir}/%{shortname}/%{shortname}.service
+install -Dp -m644 %SOURCE4 $RPM_BUILD_ROOT%{_unitdir}/%{shortname}.service
 install -Dp -m644 %SOURCE5 $RPM_BUILD_ROOT%{_datadir}/%{shortname}/README.systemd
 install -Dp -m644 %SOURCE6 $RPM_BUILD_ROOT%{_datadir}/%{shortname}/README.rebranding
+install -Dp -m644 %SOURCE7 $RPM_BUILD_ROOT%{_presetdir}/50-%{shortname}.preset
 touch $RPM_BUILD_ROOT%{_var}/lib/%{shortname}/prefs/server.prefs
 touch $RPM_BUILD_ROOT%{_var}/lib/%{shortname}/prefs/log.conf
 cp -p convert.conf $RPM_BUILD_ROOT%{_sysconfdir}/%{shortname}
@@ -217,7 +250,7 @@ ln -s %{_var}/lib/%{shortname}/prefs/server.prefs \
 rm -rf $RPM_BUILD_ROOT
 
 
-%pre
+%pre -e
 function checkConfigMigration () {
 
    test -f /tmp/squeezerpmdebug && set -x
@@ -281,7 +314,10 @@ function checkConfigMigration () {
    return 0
 }
 
+test -f /tmp/squeezerpmdebug && echo "pre script"
 test -f /tmp/squeezerpmdebug && set -x
+
+# Create user and group if needed.
 /usr/bin/getent group %{groupd} >/dev/null || /usr/sbin/groupadd -r %{groupd}
 /usr/bin/getent passwd %{userd} >/dev/null || \
 /usr/sbin/useradd -r -g %{groupd} -d %{_datadir}/%{shortname} -s /sbin/nologin \
@@ -292,97 +328,18 @@ test -f /tmp/squeezerpmdebug && set -x
 # configuration is necessary
 checkConfigMigration
 
+# The systemd RPM macros are not the same on Red Hat and SUSE
+# distributions. The systemd_pre is only available on SUSE,
+# and it is not needed on Red Hat distributions.
+# Use the -e flag for the pre script, and escape the systemd_pre
+# macro, so that the following is evaluated at runtime. This way a build
+# created on of of the OS will also work on the other OS.
+%%{?systemd_pre:%%{systemd_pre %{shortname}.service}}
+
 exit 0
 
 
 %post
-function parseSysconfigSqueezeboxserver {
-
-        test -f /tmp/squeezerpmdebug && set -x
-
-	# Some simple checks on the /etc/sysconfig/squeezeboxserver
-	# No guarantees that these checks will catch all changes that may have
-	# been made that might have an impact on the move to systemd
-	. %{_sysconfdir}/sysconfig/%{shortname}
-	if [ "$LYRION_USER" != "%{userd}" ] ; then
-                echo ""
-                echo "#######################################################################"
-		echo "You seem to have changed the user id used to run %{shortname}."
-		echo "Please read %{_datadir}/%{shortname}/README.systemd to find out"
-		echo "how transfer this change to the new systemd set-up."
-                echo "#######################################################################"
-                echo ""
-	fi
-
-	# Check if any additions to the LYRION_ARGS variable have been made.
-	# Do that by filter out the ones we know should be there.
-	extra=`echo $LYRION_ARGS |/usr/bin/perl -lane 'print foreach grep { not m/^(?:--daemon|--prefsdir|--logdir|--cachedir|--charset)(?:=|$)/  } @F'` || :
-	if [ -n "$extra" ] ; then
-                echo ""
-                echo "#######################################################################"
-		echo "You seem to have changed the LYRION_ARGS variable in %{_sysconfdir}/sysconfig/%{shortname}."
-		echo "Please read %{_datadir}/%{shortname}/README.systemd to find out"
-                echo "how transfer this change to the new systemd set-up."
-                echo "#######################################################################"
-                echo ""
-	fi
-}
-
-function setSYSV {
-
-        test -f /tmp/squeezerpmdebug && set -x
-
-	# This is a SYSV server. Copy SYSV script to the correct place.
-	/usr/bin/cp -p %{_datadir}/%{shortname}/%{shortname}.SYSV %{_sysconfdir}/init.d/%{shortname} >/dev/null 2>&1 || :
-
-	# Koozali SME Server pre version 10 uses SYSV init and uses runlevel 7
-        # I have no idea if the release file is still called /etc/e-smit-release.
-	if [ -f /etc/e-smith-release -a -d /etc/rc7.d ] ; then
-		/usr/bin/ln -sf %{_sysconfdir}/init.d/%{shortname} /etc/rc7.d/S80%{shortname} >/dev/null 2>&1 || :
-		db configuration set %{shortname} service status enabled >/dev/null 2>&1 || :
-	fi
-
-        # Check if we are moving from squeezeboxserver to lyrionmusicserver
-        # if we are, then we must explicitly stop the squeezeboxserver, 
-        # otherwise the start of the lyrionmusicserver will fail.
-        if [ -f /var/tmp/SqueezeToLyrion ]; then
-           /sbin/service squeezeboxserver stop || :
-           /usr/bin/rm -f /var/tmp/SqueezeToLyrion || :
-        fi
-
-	/sbin/chkconfig --add %{shortname} >/dev/null 2>&1 || :
-	/sbin/service %{shortname} restart >/dev/null 2>&1 || :
-}
-
-function setSystemd {
-
-        test -f /tmp/squeezerpmdebug && set -x
-	# The SME server (now a days Koozali SME) started using systemd with
-        # version 10 (based on CentOS 7). Next version is based on Rocky Linux.
-        # So we don't need any special handling for Koozali SME here.
-
-	if [ -n "$migrate" ] ; then
-		# If we currently are running through a SYSV script. First stop
- 		/sbin/service %{shortname} stop >/dev/null 2>&1 || :
-		/sbin/chkconfig --del %{shortname} >/dev/null 2>&1 || :
-		# We should not remove the old SYSV init file. The RPM
-		# package will take care of this when we do an upgrade.
-	fi
-
-        # Check if we are moving from squeezeboxserver to lyrionmusicserver
-        # if we are, then we must explicitly stop the squeezeboxserver, 
-        # otherwise the start of the lyrionmusicserver will fail.
-        if [ -f /var/tmp/SqueezeToLyrion ]; then
-           /usr/bin/systemctl stop squeezeboxserver.service >/dev/null 2>&1 || :
-           /usr/bin/rm -f /var/tmp/SqueezeToLyrion || :
-        fi
-
-	/usr/bin/cp -p %{_datadir}/%{shortname}/%{shortname}.service /usr/lib/systemd/system/%{shortname}.service || :
-	/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-        /usr/bin/systemctl enable  %{shortname}.service >/dev/null 2>&1 || :
-        /usr/bin/systemctl restart %{shortname}.service >/dev/null 2>&1 || :
-}
-
 function migrateSqueezeboxServerConfig {
 
    test -f /tmp/squeezerpmdebug && set -x
@@ -430,7 +387,7 @@ function migrateSqueezeboxServerConfig {
    /usr/bin/rm -fr /var/lib/%{shortname}.bck >/dev/null 2>&1 || :
 
    # Remove migration flag file
-   /usr/bin/rm -f /var/tmp/migrateSqueezeboxserverConfig
+   /usr/bin/rm -f /var/tmp/migrateSqueezeboxserverConfig >/dev/null 2>&1 || :
 
    # Some plugin requires the user id that is used to run
    # the music server to be in specific groups. Thus, add
@@ -450,105 +407,76 @@ function migrateSqueezeboxServerConfig {
    echo "Server. All Components of the software have been re-branded from"
    echo "squeezeboxserver to lyrionmusicserver." 
    echo "To stop and start the software use:"
-   echo "systemd start lyrionmusicserver (on systemd systems)"
-   echo "/sbin/service lyrionmusicserver start (on SYSV Init systems)."
+   echo "systemd start lyrionmusicserver"
    echo "and analogous for stop, status etc."
    echo ""
-   echo "If you have made changes to /etc/sysconfig/squeezeboxserver, then you"
-   echo "must transfer those changes yourself to /etc/sysconfig/%{shortname}."
    echo ""
    echo "For more information, read %{_datadir}/%{shortname}/README.rebranding."
+   echo "For more information, read %{_datadir}/%{shortname}/README.systemd."
    echo "################################################################################"
    echo ""
 
 }
 
+test -f /tmp/squeezerpmdebug && echo "post script"
 test -f /tmp/squeezerpmdebug && set -x
 
-# Source /etc/os-release to find out what kind of system we are on.
-# We will use ID_LIKE and ID from this file
-. /etc/os-release || :
-
-# If the SYSV init script exists and the server uses systemd
-# then migrate to systemd unit file.
-if [ -e /etc/init.d/%{shortname} -a -x /usr/bin/systemctl ] ; then
-	migrate=true
-fi
-
 # Check if we need to migrate a squeezeboxserver config to lyrion music server
-
 if [ -f /var/tmp/migrateSqueezeboxserverConfig ]; then
 
    migrateSqueezeboxServerConfig
 
 fi
 
-if [ ! -x /usr/bin/systemctl ] ; then
-	setSYSV
+# The following continues the initialisation of the service from
+# the pre script. It will use the systemd.preset files to decide
+# whether the service should be enabled or disabled by default.
+%systemd_post %{shortname}.service 
+
+# Here is an anomaly that I introduce to honour the long standing
+# tradition that the Lyrion Music Server is started immediately
+# if it is a first time installation. This of course contradicts
+# the packaging rules of Fedora/SUSE et al
+if [ "$1" -eq "1" ] ; then
+   # This is a first time install.
+   /usr/bin/systemctl daemon-reload || :
+   /usr/bin/systemctl start %{shortname}.service || :
+
+   PORT=`/usr/bin/perl -lane  'if ( /^httpport:/) {print $F[1]; exit}' %{_var}/lib/%{shortname}/prefs/server.prefs` || :
+   [ -z "$PORT" ] && PORT=9000
+   HOSTNAME=`uname -n` || :
+   echo "Point your web browser to http://$HOSTNAME:$PORT/ to configure Lyrion Music Server." || :
 else
-	setSystemd
+   # The following should normally be done in the postun script, 
+   # but as versions before 9.2 did not use the systemd_* macros to initialise
+   # the service according to the packaging rules and the postun script was 
+   # empty, we need to do this here.
+   # This bit of code should eventually be removed when we think most of the 
+   # users are on version 9.2 or newer.
+   /usr/bin/systemctl try-restart %{shortname}.service || :
 fi
 
-PORT=`/usr/bin/perl -lane  'if ( /^httpport:/) {print $F[1]; exit}' %{_var}/lib/%{shortname}/prefs/server.prefs`
-[ -z "$PORT" ] && PORT=9000
-HOSTNAME=`uname -n`
+exit 0
 
-if [ -n "$migrate" ] ; then
-	echo "Lyrion Music Server was migrated from old style SYSV to systemd start-up."
-	parseSysconfigSqueezeboxserver || :
-fi
-
-echo "Point your web browser to http://$HOSTNAME:$PORT/ to configure Lyrion Music Server."
 
 %preun
+test -f /tmp/squeezerpmdebug && echo "preun script"
 test -f /tmp/squeezerpmdebug && set -x
 
-function unsetSYSV {
-
-	/sbin/service %{shortname} stop >/dev/null 2>&1 || :
-	if [ -f /etc/e-smith-release -a -d /etc/rc7.d ] ; then
-		#SME Server uses runlevel 7
-		db configuration set %{shortname} service status disabled >/dev/null 2>&1 || :
-		/usr/bin/rm /etc/rc7.d/S80%{shortname} || :
-	fi
-       	/sbin/chkconfig --del %{shortname} >/dev/null 2>&1 || :
-	# Remove the SYSV file we copied in the post script.
-	/usr/bin/rm -f /etc/init.d/%{shortname} || :
-
-}
-
-function unsetSystemd {
-
-	# systemd
-        /usr/bin/systemctl unmask %{shortname}.service >/dev/null 2>&1 || :
-	/usr/bin/systemctl disable %{shortname}.service >/dev/null 2>&1 || :
-	/usr/bin/systemctl stop %{shortname}.service >/dev/null 2>&1 || :
-	# Remove the unit file we copied in the post script.
-	/usr/bin/rm -f /usr/lib/systemd/system/%{shortname}.service || :
-	/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-
-}
-
-. /etc/os-release || :
-
-if [ "$1" -eq "0" ] ; then
-	# If not upgrading
-
-	# First stop and removethe start-up script/unit file.
-	if [ ! -x /usr/bin/systemctl ] ; then
-
-		unsetSYSV
-
-	else
-
-		unsetSystemd
-
-	fi
-
-fi
+# Use this macro to ensure proper
+# handling of the service.
+%systemd_preun %{shortname}.service
 
 
 %postun
+test -f /tmp/squeezerpmdebug && echo "postun script"
+test -f /tmp/squeezerpmdebug && set -x
+
+# Use this macro to ensure proper
+# handling of the service.
+%systemd_postun_with_restart %{shortname}.service
+
+exit 0
 
 
 %files
@@ -578,6 +506,10 @@ fi
 %attr(0644,%{userd},%{groupd}) %ghost %{_var}/log/%{shortname}/server.log
 %attr(0644,%{userd},%{groupd}) %ghost %{_var}/log/%{shortname}/scanner.log
 
+# Systemd service file and preset file.
+%attr(0644,root,root) %{_unitdir}/%{shortname}.service
+%attr(0644,root,root) %{_presetdir}/50-%{shortname}.preset
+
 # Configuration files and init script
 %dir %{_sysconfdir}/%{shortname}
 %attr(0755,%{userd},%{groupd}) %dir %{_var}/lib/%{shortname}/prefs
@@ -605,9 +537,22 @@ fi
 
 
 %changelog
+* Wed Jun 02 2026 Johan Saaw
+- Removed support for Sys V Init. Red Hat and SUSE based distros
+  moved to systemd many years ago. Also removed support for
+  /etc/sysconfig/lyrionmusicserver
+- Added systemd as pre-requisite with the %systemd_requires macro.
+- Added BuildRequires systemd-rpm-macros
+- Added use of systemd_pre, systemd_preun, systemd_post and 
+  systemd_postun_with_restart to initialise and handle the unit
+  file and service correctly.
+- Added a systemd preset file to enable lyrionmusicserver at
+  installation time.
+- Added logic to start lyrionmusicserver immediately during 
+  install  if it is a first time installation. Upgrades will
+  follow the packaging rules.
 * Mon Oct 20 2025 Peter Oliver <rpm@mavit.org.uk>
 - Drop support for Perl versions not currently seen in usage stats.
-
 * Sat Feb 01 2025 Johan Saaw
 - Removed selinux config support for mySQL/MariaDB databases as they are no
   longer officially supported for LMS

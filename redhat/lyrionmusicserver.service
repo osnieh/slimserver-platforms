@@ -8,19 +8,11 @@ After=network.target
 # directory /etc/systemd/system/lyrionmusicserver.service.d
 # Read man page for systemd.unit and systemd.service.
 #
-# Or they can be overriden in /etc/sysconfig/lyrionmusicserver
-# The first option is recommended.
-Environment="LYRION_HOME=/usr/libexec"
 Environment="LYRION_CFG_DIR=/var/lib/lyrionmusicserver/prefs"
 Environment="LYRION_LOG_DIR=/var/log/lyrionmusicserver"
 Environment="LYRION_CACHE_DIR=/var/lib/lyrionmusicserver/cache"
 Environment="LYRION_CHARSET=utf8"
 Environment="LYRION_ADDITIONAL_ARGS="
-
-# The content of this file will override any setting made with the Environment
-# variables here above. It will also override any Environment variables set
-# in /etc/systemd/system/lyrionmusicserver.service.d/*.conf
-EnvironmentFile=-/etc/sysconfig/lyrionmusicserver
 
 # Do not change this, it will most likely break the lyrionmusicserver
 # installation. The directory /usr/lib/perl5/vendor_perl is where the RPM
@@ -29,7 +21,6 @@ EnvironmentFile=-/etc/sysconfig/lyrionmusicserver
 # directories in the perl @INC array.
 Environment="PERL5LIB=/usr/lib/perl5/vendor_perl"
 
-#Type=simple
 User=lyrionmusicserver
 Group=lyrionmusicserver
 ExecStart=/usr/libexec/lyrionmusicserver --prefsdir $LYRION_CFG_DIR --logdir $LYRION_LOG_DIR --cachedir $LYRION_CACHE_DIR --charset $LYRION_CHARSET $LYRION_ADDITIONAL_ARGS

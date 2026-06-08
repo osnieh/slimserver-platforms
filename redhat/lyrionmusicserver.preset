@@ -1,0 +1,6 @@
+#-------------------------------------------------------------------------------
+# We want the lyrionmusicserver to be enabled immediately after installation.
+# The reason is that all configuration is performed via the web-GUI. There is
+# no configurations to be done on the command line or manually in files.
+#-------------------------------------------------------------------------------
+enable lyrionmusicserver.service

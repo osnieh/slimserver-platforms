@@ -1,14 +1,3 @@
-* BACKGROUND
-
-The fedora, RedHat, CentOS and SUSE distributions have changed the
-start-up system to systemd from SYSV. The distributions offer
-some backwards compatibility, but in the long run it is better
-to migrate the Lyrion Music Server to use a systemd unit file for
-start-up. Systemd seems to be the future for these distributions,
-whatever we might think about it.
-
-* More information
-
 Please read the following man pages for in depth information on how
 the systemd unit files work.
 
@@ -16,30 +5,81 @@ systemd.unit
 systemd.service
 
 
+********************************************************************************
 * Stop/Start/Check status of  Lyrion Music Server
+********************************************************************************
 
 sudo systemctl start lyrionmusicserver
 sudo systemctl stop lyrionmusicserver
 systemctl status lyrionmusicserver
 sudo systemctl restart lyrionmusicserver
 
-* To see the contentof the systemd unit file
+********************************************************************************
+* To see the content of the systemd unit file
+********************************************************************************
 
 systemctl cat lyrionmusicserver
 
-* The user running Lyrion Music server
+********************************************************************************
+* Adapting the Lyrion Music Configuration
+********************************************************************************
 
-Due to the way systemd unit files work it has been deemed better not to 
-allow setting of the user id running the Lyrion Muisc server in the
-/etc/sysconfig/lyrionmusicserver file. To change the user running lyrionmusicserver,
-please create a so called drop-in file in the directory:
+To tweak, extend or change the Lyrion Music Server it is necessary to use drop
+in files for systemd. The drop in files for Lyrion Music Server  must be created
+in:
 
 /etc/systemd/system/lyrionmusicserver.service.d
 
-(you will have to create the directory). The file can be called anything, but
-it needs the string .conf at the end, e.g. 
+You will have to create the directory yourself. The drop in file can be called 
+anything, but it needs the string ".conf" at the end of the name, e.g. 
 
-mylyrionuser.conf
+lyrion_changed_config.conf
+
+You can create one or more drop in files in that directory. You can have one or
+more changes to the configuration in the files. Remember that the files are read
+in lexicographic order so that the files read last overrides the files read
+earlier if they have overlapping configuration statements.
+
+NOTE: NEVER MAKE ANY CHANGES TO THE UNIT FILE DELIVERED BY RPM PACKAGE IN THE
+      LOCATION /usr/lib/systemd/system/lyrionmusicserver.service. ANY CHANGES IN
+      THIS FILE WILL BE OVERWRITTEN NEXT TIME THE LYRION MUSIC SERVER IS 
+      UPGRADED.
+
+The default systemd unit file comes with a working configuration. Only change
+it, if you know what you are doing.
+
+In the default unit file the following 5 environment variables are defined. 
+
+Environment="LYRION_CFG_DIR=/var/lib/lyrionmusicserver/prefs"
+Environment="LYRION_LOG_DIR=/var/log/lyrionmusicserver"
+Environment="LYRION_CACHE_DIR=/var/lib/lyrionmusicserver/cache"
+Environment="LYRION_CHARSET=utf8"
+Environment="LYRION_ADDITIONAL_ARGS="
+
+These environment variables are used further down in the unit file in the start
+command.
+
+You can change the Lyrion start-up command by changing the value of the four 
+first variables here above and add any other command line parameter to the start
+command by using the variable LYRION_ADDITIONAL_ARGS by adding one or
+more drop in files in /etc/systemd/system/lyrionmusicserver.service.d as 
+described here above.
+
+You can also change the user id and group id used to run the server with 
+drop in files. There is an example here below.
+
+********************************************************************************
+*
+* EXAMPLES
+*
+********************************************************************************
+
+********************************************************************************
+* How to change the log directory location
+********************************************************************************
+
+Create a file in /etc/systemd/system/lyrionmusicserver.service.d, you can call
+the file whatever you like, but the name must end with ".conf".
 
 The content of the file should be (without the dashed lines)
 
@@ -47,48 +87,65 @@ The content of the file should be (without the dashed lines)
 
 [Service]
 
-USER=add-the-user-id-you-want-to-use-here
+Environment="LYRION_LOG_DIR=/your/preferred/location"
+
 
 -----------------------------------------------
 
-* Passing extra arguments to the Lyrion Music server
+After you created the file you must tell the systemd to pick up the changes.
+Execute:
 
-The way the variable LYRION_ARGS is defined in /etc/sysconfig/lyrionmusicserver
-makes it unusable in the systemd unit file. If you have added parameters to
-this variable in the file and you want to keep them, then you must instead add
-them to the new variable LYRION_ADDITIONAL_ARGS. You can do this by adding 
-the following in the /etc/sysconfig/lyrionmusicserver file (without the dashed
-lines)
+sudo systemctl daemon-reload
+
+Then restart Lyrion Music Server so that it picks up the new configuration.
+
+NOTE: Make sure that you create the new diretory before you restart the service.
+
+********************************************************************************
+* Passing extra arguments to the Lyrion Music server
+********************************************************************************
+
+If you want to pass extra variables to Lyrion Music Server at startup, then add
+them to the variable LYRION_ADDITIONAL_ARGS. To do this create a drop in file in
+/etc/systemd/system/lyrionmusicserver.service.d with this content (without the 
+dashed lines):
 
 ------------------------------------------------
 
-LYRION_ADDITIONAL_ARGS="--d_startup"
+[Service]
+
+Environment="LYRION_ADDITIONAL_ARGS=--d_startup"
 
 ------------------------------------------------
 
 *** PLEASE NOTE ***
-You can't use nested variables like in the past for LYRION_ARGS.
+You can't use nested variables in the definition for LYRION_ADDITIONAL_ARGS.
 
-An alternative is to create a drop-in file for systemd as described here above
-for the USER. You can of course use the same drop-in file, just add an
-additional line like this
+********************************************************************************
+* How to change the user id and group used to run Lyrion Music Server
+********************************************************************************
 
-Environment="LYRION_ADDITIONAL_ARGS=--d_startup"
+Create a file in /etc/systemd/system/lyrionmusicserver.service.d, you can call
+the file whatever you like, but the name ust end with ".conf".
 
-Please remember that the content of /etc/sysconfig/lyrionmusicserver will 
-override the content of the drop-in files in
-/etc/systemd/system/lyrionmusicserver.service.d. This means that if you define 
-LYRION_ADDITIONAL_ARGS both in the drop-in file and in 
-/etc/sysconfig/lyrionmusicserver, then it is the content of the latter that will
-be used.
+The content of the file should be (without the dashed lines)
 
-################################################################################
-I strongly recommend to either delete the file /etc/sysconfig/lyrionmusicserver
-or comment out all lines in the file and entirely rely on the drop in file in 
-/etc/systemd/system/lyrionmusicserver.service.d if you want to make any changes
-to the way the Lyrion Music server is started.
+-----------------------------------------------
 
-** NEVER EDIT ** the file /usr/lib/systemd/systemlyrionmusicserver.service. This
-file will be overwritten next time you upgrade the Lyrion Music Server. If you
-need to change anything in the unit file, then use the drop-in file in 
-/etc/systemd/system/lyrionmusicserver.service.d as described here above.
+[Service]
+
+USER=the-preferred-user-name
+GROUP=the-preferred-group-name
+
+-----------------------------------------------
+
+After you created the file you must tell the systemd to pick up the changes.
+Execute:
+
+sudo systemctl daemon-reload
+
+NOTE!
+Please bear in mind that changing the user and group that runs the Lyrion Music
+Server processes is a far reaching change. You will have to ensure that the new
+user id and group id have sufficient read and write rights to all the file used
+by the Lyrion Music Server. 
