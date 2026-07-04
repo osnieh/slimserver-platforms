@@ -16,7 +16,7 @@ use constant DESTDIR_NOT_REQUIRED => '[not required]';
 
 ## Here we set some basic settings.. most of these dont need to change very often.
 my $squeezeCenterStartupScript = "server/slimserver.pl";
-my $sourceDirsToExclude = ".vscode .vstags .secrets .gitignore .editorconfig .svn .git .github t tests slimp3 squeezebox /softsqueeze tools ext/source ext-all-debug.js build Firmware/*.bin NYTProf Plugins/*";
+my $sourceDirsToExclude = ".vscode .vstags .secrets .gitignore .editorconfig .svn .git .github t tests slimp3 squeezebox /softsqueeze tools ext/source ext-all-debug.js build Firmware/*.bin Graphics/*.TTF Graphics/*.ttf NYTProf Plugins/*";
 my $revisionTextFile = "server/revision.txt";
 my $revision;
 my $myVersion = "1.1.0";
@@ -37,7 +37,7 @@ my $dirsToExcludeForARMDeb = "$dirsToExcludeForARMTarball 5.10 5.12 5.14 5.16 5.
 my $dirsToExcludeForx86_64Deb = "5.10 5.12 5.14 5.16 5.18 5.20 5.22 5.24 5.26 MSWin32-x86-multi-thread MSWin32-x64-multi-thread PreventStandby i386-linux i86pc-solaris-thread-multi-64int darwin darwin-x86_64 sparc-linux arm-linux armhf-linux i386-freebsd-64int powerpc-linux aarch64-linux icudt46b.dat icudt58b.dat";
 my $dirsToExcludeFori386Deb = "5.10 5.12 5.14 5.16 5.18 5.20 5.22 5.28 5.30 5.32 5.34 5.36 5.38 5.40 5.42 MSWin32-x86-multi-thread MSWin32-x64-multi-thread PreventStandby x86_64-linux i86pc-solaris-thread-multi-64int darwin darwin-x86_64 sparc-linux arm-linux armhf-linux i386-freebsd-64int powerpc-linux aarch64-linux icudt46b.dat icudt58b.dat";
 my $dirsToExcludeForLinuxNoCpanTarball = "i386-freebsd-64int MSWin32-x86-multi-thread MSWin32-x64-multi-thread i86pc-solaris-thread-multi-64int darwin darwin-x86_64 i386-linux sparc-linux x86_64-linux arm-linux armhf-linux powerpc-linux aarch64-linux /arch/ PreventStandby";
-my $dirsToExcludeForLinuxNoCpanLightTarball = $dirsToExcludeForLinuxNoCpanTarball . " /Bin/ /HTML/! /Firmware/ /MySQL/ Graphics/CODE2000* Plugin/DateTime DigitalInput iTunes LineIn LineOut MusicMagic RSSNews Rescan SavePlaylist SlimTris Snow Plugin/TT/ Visualizer xPL";
+my $dirsToExcludeForLinuxNoCpanLightTarball = $dirsToExcludeForLinuxNoCpanTarball . " /Bin/ /HTML/! /Firmware/ /MySQL/ Plugin/DateTime DigitalInput iTunes LineIn LineOut MusicMagic RSSNews Rescan SavePlaylist SlimTris Snow Plugin/TT/ Visualizer xPL";
 my $dirsToIncludeForLinuxNoCpanLightTarball = "EN.*html/images CPAN/HTML";
 my $dirsToExcludeForPCP = "$dirsToExcludeForLinuxNoCpanTarball CPAN/Font";
 my $dirsToExcludeForMacOS = "5.10 5.12 5.14 5.16 5.20 5.22 5.24 5.26 5.28 5.30 5.32 5.36 5.38 5.40 5.42 i386-freebsd-64int i386-linux x86_64-linux x86_64-linux-gnu-thread-multi MSWin32 i86pc-solaris-thread-multi-64int arm-linux armhf-linux powerpc-linux sparc-linux aarch64-linux OS/Debian.pm OS/Linux.pm OS/pCP.pm OS/RedHat.pm OS/Suse.pm OS/SlimService.pm OS/Synology.pm OS/SqueezeOS.pm OS/Unix.pm OS/Win32.pm OS/Win64.pm";
@@ -651,7 +651,7 @@ sub buildRPM {
 
         # Do it
         my $date = strftime('%Y-%m-%d', localtime());
-        print `rpmbuild -bb --with $releaseType --define="src_basename $defaultDestName" --define="_version $version" --define="_src_date $date" --define="_revision $revision" --define='_topdir $buildDir/rpm' $buildDir/rpm/SPECS/lyrionmusicserver.spec`;
+        print `rpmbuild -bb --with $releaseType --define="src_basename $defaultDestName" --define="_version $version" --define="_revision $revision" --define='_topdir $buildDir/rpm' $buildDir/rpm/SPECS/lyrionmusicserver.spec`;
 
 	## Just move the file out of the building directory, and put it into the destDir
 	print "INFO: Moving $buildDir/rpm/RPMS/noarch/*.rpm to $destDir\n";
