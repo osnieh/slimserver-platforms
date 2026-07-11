@@ -76,7 +76,11 @@ Summary:        Lyrion Music Server
 
 License:	GPL and proprietary
 URL:		https://www.lyrion.org
-Source0:	%{src_basename}.tgz
+%if %{with release}
+Source0:	https://downloads.lms-community.org/LyrionMusicServer_v%{version}/%{src_basename}-%{version}.tgz
+%else
+Source0:	https://downloads.lms-community.org/nightly/%{src_basename}-%{version}-%{_revision}.tgz
+%endif
 Source1:	%{shortname}.config
 Source3:	%{shortname}.logrotate
 Source4:	%{shortname}.service
@@ -165,14 +169,16 @@ player. It supports MP3, AAC, WMA, FLAC, Ogg Vorbis, WAV and more!
 As of version 7.7 it also supports UPnP clients.
 
 %prep
-%setup -q -n %{src_basename}
+%if %{with release}
+%autosetup -n %{src_basename}-%{version}
+%else
+%autosetup -n %{src_basename}-%{version}-%{_revision}
+%endif
+
+cp %SOURCE5 %SOURCE6 ./
 
 
 %build
-# Rearrange some documentation
-mv lib/README README.lib
-mv HTML/README.txt README.HTML
-
 # Remove mysqld and other unneeded files
 rm -rf Bin/darwin
 rm -rf Bin/i386-freebsd-64int
@@ -227,8 +233,6 @@ ln -rs $RPM_BUILD_ROOT%{_var}/lib/%{shortname}/Plugins \
 install -Dp -m644 %SOURCE1 $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/%{shortname}
 install -Dp -m644 %SOURCE3 $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/%{shortname}
 install -Dp -m644 %SOURCE4 $RPM_BUILD_ROOT%{_unitdir}/%{shortname}.service
-install -Dp -m644 %SOURCE5 $RPM_BUILD_ROOT%{_datadir}/%{shortname}/README.systemd
-install -Dp -m644 %SOURCE6 $RPM_BUILD_ROOT%{_datadir}/%{shortname}/README.rebranding
 install -Dp -m644 %SOURCE7 $RPM_BUILD_ROOT%{_presetdir}/50-%{shortname}.preset
 touch $RPM_BUILD_ROOT%{_var}/lib/%{shortname}/prefs/server.prefs
 touch $RPM_BUILD_ROOT%{_var}/lib/%{shortname}/prefs/log.conf
@@ -482,7 +486,15 @@ exit 0
 %defattr(-,root,root,-)
 
 # Documentation files
-%doc Changelog*.html License.* README.lib README.HTML
+%license License.txt
+%doc Changelog*.html
+%doc README.md
+%doc %{_datadir}/%{shortname}/HTML/Default/html/ext/README.TXT
+%doc %{_datadir}/%{shortname}/HTML/README.txt
+%doc %{_datadir}/%{shortname}/lib/README
+%doc %{_usr}/lib/perl5/vendor_perl/Slim/Plugin/TT/README
+%doc %{basename %SOURCE5}
+%doc %{basename %SOURCE6}
 
 # Main files
 %{_usr}/lib/perl5/vendor_perl/Slim

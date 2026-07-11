@@ -627,14 +627,14 @@ sub buildRPM {
 	}
 
 	## Now we need to build a tarball ...
-	print "INFO: Building $buildDir/$defaultDestName.tgz for the RPM...\n";
+	print "INFO: Building $buildDir/$destName.tgz for the RPM...\n";
 
-	buildTarball($dirsToExcludeForRPM, "$buildDir/$defaultDestName");
+	buildTarball($dirsToExcludeForRPM, "$buildDir/$destName");
 
 	## We already built a tarball, so now lets use it...
-	print "INFO: Moving $buildDir/$defaultDestName.tgz to $buildDir/rpm/SOURCES...\n";
-	system("mv $buildDir/$defaultDestName.tgz $buildDir/rpm/SOURCES");
 
+	print "INFO: Moving $buildDir/$destName.tgz to $buildDir/rpm/SOURCES/...\n";
+	system("mv $buildDir/$destName.tgz $buildDir/rpm/SOURCES/");
 	## Copy the various SPEC< Config, etc files into the right dirs...
         copy("$buildDir/platforms/redhat/lyrionmusicserver.config", "$buildDir/rpm/SOURCES");
         copy("$buildDir/platforms/redhat/lyrionmusicserver.logrotate", "$buildDir/rpm/SOURCES");
