@@ -13,6 +13,10 @@
 %bcond branch 0
 %bcond release %{without trunk} && %{without branch}
 
+%if ! %{defined src_basename}
+%global src_basename lyrionmusicserver
+%endif
+
 # As from version 9.0.0 the logitech media server has been re-branded 
 # to Lyrion Music Server. It was decided to also properly re-name all
 # components in the RPM package that have been using the string
@@ -69,7 +73,7 @@
 %global shortname lyrionmusicserver
 
 Name:		%{src_basename}
-Packager:	Lyrion Community - please visit www.lyrion.org
+Packager:	Lyrion Community
 Version:	%{_version}
 Release:	%{rpm_release}
 Summary:        Lyrion Music Server
@@ -88,7 +92,6 @@ Source5:	README.systemd
 Source6:        README.rebranding
 Source7:        %{shortname}.preset
 BuildRoot:	%{_tmppath}/%{name}-%{version}-buildroot
-Vendor:		Lyrion Community
 
 BuildRequires:   systemd-rpm-macros
 Requires(pre):   /usr/bin/getent
