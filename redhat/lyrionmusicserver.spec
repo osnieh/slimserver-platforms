@@ -495,6 +495,7 @@ exit 0
 %doc %{_datadir}/%{shortname}/HTML/Default/html/ext/README.TXT
 %doc %{_datadir}/%{shortname}/HTML/README.txt
 %doc %{_datadir}/%{shortname}/lib/README
+%doc %{_usr}/lib/perl5/vendor_perl/Slim/DO_NOT_INSTALL_YOUR_PLUGINS_HERE.txt
 %doc %{_usr}/lib/perl5/vendor_perl/Slim/Plugin/TT/README
 %doc %{basename %SOURCE5}
 %doc %{basename %SOURCE6}
